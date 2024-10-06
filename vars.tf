@@ -8,6 +8,11 @@ variable "vpc_id" {
   type    = string
   default = "vpc-01b834daa2d67cdaa"
 }
+variable "use_dynamic_vpc_id" {
+  type        = bool
+  default     = true
+  description = "Set to true if you want to dynamically get the VPC ID by name."
+}
 
 variable "cidr_1" {
   type    = string

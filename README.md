@@ -98,14 +98,3 @@ This file defines the outputs of the project, allowing us to capture and display
    ```
 
    This command will tear down all the infrastructure created by Terraform.
-
-## Requirements
-
-- Terraform >= 0.12
-- AWS account and credentials
-- Configured S3 bucket for state storage
-
-## Notes
-
-- Ensure you have the correct IAM permissions to create the necessary resources in AWS.
-- Customize the region and CIDR block by modifying the variables in `vars.tf`.

@@ -5,7 +5,13 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
   tags = {
     Name = "barm-terraform-subnet-1"
   }
+}
 
-
-
+resource "aws_subnet" "barm-terraform-subnet-2" {
+  vpc_id            = var.vpc_id
+  cidr_block        = var.cidr_2
+  availability_zone = "${var.region}b"
+  tags = {
+    Name = "barm-terraform-subnet-2"
+  }
 }

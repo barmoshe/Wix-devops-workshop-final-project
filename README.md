@@ -1,25 +1,14 @@
+
 # Terraform Project for AWS Subnet Creation
 
-This project provisions resources on AWS using Terraform. Specifically, it creates a subnet with a CIDR block `192.168.24.0/24` within a specified VPC.
+This Terraform project provisions AWS resources, specifically creating a subnet with a CIDR block `192.168.24.0/24` within a specified VPC.
 
-## Project Structure
-
-The repository contains the following files:
-
-```
-├── README.md         # Project documentation (this file)
-├── config.tf.json    # Terraform configuration for backend
-├── data.tf           # Data sources
-├── main.tf           # Main configuration for resource creation
-├── output.tf         # Output values
-├── providers.tf      # Providers configuration
-└── vars.tf           # Variable definitions
-```
+## Project Files
 
 ### 1. `config.tf.json`
-This file contains the backend configuration for Terraform, which defines where the state file will be stored. In this case, the backend is configured to use an S3 bucket.
+This file configures the Terraform backend, which specifies where the Terraform state file is stored. In this case, an S3 bucket is used.
 
-```
+```json
 {
   "terraform": {
     "backend": {
@@ -34,10 +23,11 @@ This file contains the backend configuration for Terraform, which defines where 
 ```
 
 ### 2. `vars.tf`
-This file defines the variables used throughout the project. It contains variables like the VPC ID and CIDR block for the subnet.
+This file defines the project variables. Key variables include the VPC ID and CIDR block for the subnet.
 
 Example variable definition:
-```
+
+```hcl
 variable "subnet_cidr1" {
   description = "The CIDR block for the first subnet"
   default     = "192.168.24.0/24"
@@ -45,9 +35,9 @@ variable "subnet_cidr1" {
 ```
 
 ### 3. `main.tf`
-The main Terraform configuration file, which defines the resources to be created. Below is an example of creating an AWS subnet with the appropriate CIDR block:
+The primary Terraform configuration file where resources are defined. The following example creates an AWS subnet with the specified CIDR block:
 
-```
+```hcl
 resource "aws_subnet" "barm-terraform-subnet-1" {
   vpc_id            = var.vpc_id
   cidr_block        = var.subnet_cidr1
@@ -60,41 +50,60 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
 ```
 
 ### 4. `providers.tf`
-This file defines the provider configuration. For this project, we use the AWS provider:
+This file defines the provider configurations for the project. The AWS provider is configured to use the `eu-west-1` region.
 
-```
+```hcl
 provider "aws" {
   region = "eu-west-1"
 }
 ```
 
 ### 5. `output.tf`
-This file defines the outputs of the project, allowing us to capture and display information about the created resources.
+Defines the output variables of the project. These outputs capture and display useful information about the resources created by Terraform.
 
-## How to Use
+## Usage
 
-1. **Clone the repository**:
-   ```
+Follow these steps to use the project:
+
+1. **Clone the Repository**
+
+   Clone the repository to your local machine:
+
+   ```bash
    git clone <repository-url>
    ```
 
-2. **Initialize Terraform**:
-   ```
+2. **Initialize Terraform**
+
+   Run the following command to download the necessary provider plugins and initialize the backend:
+
+   ```bash
    terraform init
    ```
 
-   This will download the necessary provider plugins and initialize the backend.
+3. **Apply the Terraform Configuration**
 
-3. **Apply the configuration**:
-   ```
+   Apply the configuration to create the subnet and other resources:
+
+   ```bash
    terraform apply
    ```
 
-   This will create the subnet and other resources as defined in `main.tf`. Ensure you have the correct AWS credentials configured.
+   Make sure you have the correct AWS credentials set up.
 
-4. **Destroy resources**:
-   ```
+4. **Destroy the Resources**
+
+   To tear down all the infrastructure created by Terraform, run:
+
+   ```bash
    terraform destroy
    ```
 
-   This command will tear down all the infrastructure created by Terraform.
+## Prerequisites
+
+- AWS account and credentials configured
+- Terraform installed on your local machine
+
+## License
+
+This project is open-source and available under the [MIT License](LICENSE).

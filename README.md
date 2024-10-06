@@ -1,4 +1,3 @@
-
 # Terraform Project for AWS Subnet Creation
 
 This Terraform project provisions AWS resources, specifically creating a subnet with a CIDR block `192.168.24.0/24` within a specified VPC.
@@ -6,6 +5,7 @@ This Terraform project provisions AWS resources, specifically creating a subnet 
 ## Project Files
 
 ### 1. `config.tf.json`
+
 This file configures the Terraform backend, which specifies where the Terraform state file is stored. In this case, an S3 bucket is used.
 
 ```json
@@ -23,6 +23,7 @@ This file configures the Terraform backend, which specifies where the Terraform 
 ```
 
 ### 2. `vars.tf`
+
 This file defines the project variables. Key variables include the VPC ID and CIDR block for the subnet.
 
 Example variable definition:
@@ -35,6 +36,7 @@ variable "subnet_cidr1" {
 ```
 
 ### 3. `main.tf`
+
 The primary Terraform configuration file where resources are defined. The following example creates an AWS subnet with the specified CIDR block:
 
 ```hcl
@@ -42,7 +44,7 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
   vpc_id            = var.vpc_id
   cidr_block        = var.subnet_cidr1
   availability_zone = "${var.region}a"    # Availability zone based on region variable
-  
+
   tags = {
     Name = "barm-terraform-subnet-1"
   }
@@ -50,6 +52,7 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
 ```
 
 ### 4. `providers.tf`
+
 This file defines the provider configurations for the project. The AWS provider is configured to use the `eu-west-1` region.
 
 ```hcl
@@ -59,6 +62,7 @@ provider "aws" {
 ```
 
 ### 5. `output.tf`
+
 Defines the output variables of the project. These outputs capture and display useful information about the resources created by Terraform.
 
 ## Usage
@@ -103,7 +107,3 @@ Follow these steps to use the project:
 
 - AWS account and credentials configured
 - Terraform installed on your local machine
-
-## License
-
-This project is open-source and available under the [MIT License](LICENSE).

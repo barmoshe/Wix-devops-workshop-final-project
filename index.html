@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Meta tags and head content -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Terraform AWS Interactive Experience</title>
+    <!-- External CSS and JS links -->
     <link
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
@@ -11,31 +13,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <link
       rel="stylesheet"
-      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/github-dark.min.css"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/github.min.css"
     />
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
     <style>
+      /* Google Fonts */
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
       body {
-        background-color: #121212;
-        color: #e5e7eb;
+        background-color: #f5f5f5;
+        color: #333;
         font-family: "Inter", sans-serif;
         overflow-x: hidden;
       }
 
+      /* Navigation Styles */
       nav {
-        background-color: rgba(18, 18, 18, 0.95);
+        background-color: #ffffff;
         position: sticky;
         top: 0;
         z-index: 50;
         padding: 15px 0;
-        backdrop-filter: blur(15px);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        border-bottom: 1px solid #e5e7eb;
       }
 
       nav a {
-        color: #e5e7eb;
+        color: #333;
         margin-right: 30px;
         text-decoration: none;
         font-weight: 600;
@@ -48,7 +51,7 @@
         display: block;
         width: 0;
         height: 2px;
-        background: #3b82f6;
+        background: #6366f1;
         transition: width 0.3s;
         position: absolute;
         bottom: -5px;
@@ -61,12 +64,13 @@
       }
 
       nav a:hover {
-        color: #3b82f6;
+        color: #6366f1;
         transform: translateY(-2px);
       }
 
+      /* Button Styles */
       .button-animated {
-        background: linear-gradient(90deg, #3b82f6, #1e40af);
+        background: linear-gradient(90deg, #6366f1, #818cf8);
         color: #ffffff;
         border-radius: 9999px;
         padding: 14px 28px;
@@ -74,14 +78,14 @@
         font-weight: 700;
         transition: transform 0.3s ease, box-shadow 0.3s ease,
           background 0.5s ease;
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
         display: inline-block;
       }
 
       .button-animated:hover {
         transform: translateY(-4px);
-        box-shadow: 0 16px 30px rgba(59, 130, 246, 0.6);
-        background: linear-gradient(90deg, #1e40af, #3b82f6);
+        box-shadow: 0 16px 30px rgba(99, 102, 241, 0.6);
+        background: linear-gradient(90deg, #818cf8, #6366f1);
       }
 
       .button-hidden {
@@ -92,27 +96,30 @@
         display: inline-block;
       }
 
+      /* Terminal and Section Styles */
       .terminal {
-        background-color: #1e293b;
-        color: #a5f3fc;
+        background-color: #1f2937;
+        color: #e5e7eb;
         padding: 25px;
         font-family: "Fira Code", monospace;
-        font-size: 1.05rem;
+        font-size: 1rem;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-        border: 1px solid #334155;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
         transition: border-color 0.3s;
       }
 
       .cloud-section,
-      .s3-section {
-        background-color: #1f2937;
+      .s3-section,
+      .files-section {
+        background-color: #ffffff;
         padding: 25px;
         border-radius: 12px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-        border: 1px solid #334155;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
         transition: border-color 0.3s;
+        text-align: center;
       }
 
       .step-content {
@@ -129,7 +136,7 @@
         padding: 25px;
         width: 180px;
         height: 180px;
-        background-color: #3b82f6;
+        background-color: #6366f1;
         border-radius: 12px;
         display: inline-flex;
         align-items: center;
@@ -137,8 +144,10 @@
         margin: 15px;
         opacity: 0;
         transform: translateY(30px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
         transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
+        color: #ffffff;
+        font-weight: 600;
       }
 
       .file-icon.visible {
@@ -147,8 +156,8 @@
       }
 
       .file-icon.highlight {
-        background-color: #1e40af;
-        box-shadow: 0 8px 25px rgba(30, 64, 175, 0.5);
+        background-color: #4f46e5;
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
       }
 
       .highlight-border {
@@ -159,23 +168,23 @@
         display: block;
         padding: 20px;
         font-size: 1rem;
-        background: #1e293b;
+        background: #f3f4f6;
         border-radius: 12px;
         margin: 25px 0;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
         overflow-x: auto;
       }
 
       .cloud-icon {
-        font-size: 1.2rem;
-        color: #3b82f6;
-        font-weight: 600;
+        font-size: 1.5rem;
+        color: #6366f1;
+        font-weight: 700;
       }
 
       .file-icon#state-file,
       .file-icon#state-file-plan,
       .file-icon#updated-state-file {
-        font-size: 0.95rem;
+        font-size: 1rem;
         text-align: center;
       }
 
@@ -194,9 +203,10 @@
         position: absolute;
         left: 0;
         top: 0;
-        color: #3b82f6;
+        color: #6366f1;
       }
 
+      /* Responsive Styles */
       @media (max-width: 768px) {
         nav a {
           margin-right: 15px;
@@ -214,7 +224,8 @@
 
         .terminal,
         .cloud-section,
-        .s3-section {
+        .s3-section,
+        .files-section {
           padding: 20px;
         }
 
@@ -222,12 +233,23 @@
           padding: 12px 24px;
           font-size: 0.95rem;
         }
+
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        h2 {
+          font-size: 2rem;
+        }
       }
 
+      /* Code Showcase Styles */
       .code-showcase {
         display: flex;
         flex-direction: column;
         gap: 20px;
+        width: 90%;
+        margin: 0 auto;
       }
 
       .tabs {
@@ -239,13 +261,17 @@
       }
 
       .tab {
-        background-color: #2d3748;
-        color: #e5e7eb;
+        background-color: #e5e7eb;
+        color: #333;
         padding: 10px 20px;
         border-radius: 9999px;
         cursor: pointer;
         transition: background-color 0.3s, transform 0.3s;
         font-weight: 600;
+      }
+
+      .tab:hover {
+        background-color: #d1d5db;
       }
 
       .hamburger {
@@ -257,7 +283,7 @@
       .hamburger span {
         height: 3px;
         width: 25px;
-        background: #e5e7eb;
+        background: #333;
         margin-bottom: 5px;
         border-radius: 5px;
       }
@@ -269,7 +295,7 @@
           top: 60px;
           left: 0;
           right: 0;
-          background: rgba(18, 18, 18, 0.95);
+          background: #ffffff;
           flex-direction: column;
           align-items: center;
           padding: 10px 0;
@@ -286,7 +312,8 @@
       }
 
       .tab.active {
-        background-color: #3b82f6;
+        background-color: #6366f1;
+        color: #ffffff;
         transform: translateY(-2px);
       }
 
@@ -299,8 +326,12 @@
       }
 
       .code-container {
-        max-height: 500px;
+        max-height: 700px;
         overflow-y: auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
       }
 
       ::-webkit-scrollbar {
@@ -308,76 +339,98 @@
       }
 
       ::-webkit-scrollbar-track {
-        background: #1e293b;
+        background: #e5e7eb;
       }
 
       ::-webkit-scrollbar-thumb {
-        background-color: #3b82f6;
+        background-color: #6366f1;
         border-radius: 4px;
+      }
+
+      /* Smooth Scrolling */
+      html {
+        scroll-behavior: smooth;
       }
     </style>
   </head>
 
   <body>
+    <!-- Navigation -->
     <nav>
-      <div class="hamburger" id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div class="nav-links" id="nav-links">
-        <a href="#home" class="nav-link">Home</a>
-        <a href="#workflow" class="nav-link">Terraform Workflow</a>
-        <a href="#terraform-code" class="nav-link">Terraform Code</a>
-        <a href="#summary-section" class="nav-link">Summary</a>
+      <div class="container mx-auto flex items-center justify-between px-6">
+        <div class="text-2xl font-bold text-gray-800">Terraform AWS Demo</div>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="nav-links flex items-center" id="nav-links">
+          <a href="#home" class="nav-link">Home</a>
+          <a href="#workflow" class="nav-link">Workflow</a>
+          <a href="#terraform-code" class="nav-link">Code</a>
+          <a href="#summary-section" class="nav-link">Summary</a>
+        </div>
       </div>
     </nav>
 
+    <!-- Home Section -->
     <section
       id="home"
       class="min-h-screen flex flex-col justify-center items-center text-center px-6"
     >
       <h1
-        class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 mb-6"
+        class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 mb-6"
       >
         Automating AWS Subnet Creation with Terraform
       </h1>
-      <p class="text-xl md:text-2xl mb-10 text-gray-300">
+      <p class="text-xl md:text-2xl mb-10 text-gray-600 max-w-3xl">
         Experience a seamless journey through Terraform's integration with AWS,
         managing infrastructure effortlessly.
       </p>
       <button id="start-button" class="button-animated">Get Started</button>
     </section>
 
+    <!-- Workflow Section -->
     <section
       id="workflow"
       class="step min-h-screen flex flex-col items-center justify-center p-10"
     >
+      <!-- Step 1 -->
       <div id="step-1" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center">
-          Step 1: Terraform Initialization
-          <span class="font-mono">(`terraform init`)</span>
+        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+          Step 1: Create Config and TF Files
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-          <div class="terminal lg:col-span-1" id="terminal-init">
-            <div id="terraform-init">
-              <div class="line">terraform init</div>
-              <div class="line">Initializing the backend...</div>
-              <div class="line">Downloading AWS provider plugin...</div>
-              <div class="line">Backend configured with S3 bucket.</div>
+          <!-- Terminal Column -->
+          <div class="terminal lg:col-span-1" id="terminal-create-files">
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+              Terminal
+            </h3>
+            <div id="file-creation">
+              <div class="line">touch main.tf</div>
+              <div class="line">touch variables.tf</div>
+              <div class="line">touch config.tf.json</div>
+              <div class="line">Files created successfully.</div>
             </div>
           </div>
+          <!-- Files Column -->
           <div
-            id="aws-cloud-init"
-            class="cloud-section flex flex-col items-center justify-center"
+            class="files-section flex flex-col items-center justify-center"
+            id="files-section"
           >
-            <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              Terraform Files
+            </h3>
+            <div class="file-icon" id="file-main-tf">main.tf</div>
+            <div class="file-icon" id="file-variables-tf">variables.tf</div>
+            <div class="file-icon" id="file-config-json">config.tf.json</div>
           </div>
-          <div
-            id="s3-section-init"
-            class="s3-section flex flex-col items-center justify-center"
-          >
-            <div class="file-icon" id="state-file">terraform.tfstate</div>
+          <!-- S3 Bucket Column -->
+          <div class="s3-section flex flex-col items-center justify-center">
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              S3 Bucket
+            </h3>
+            <div class="empty-placeholder text-gray-500">No files yet</div>
           </div>
         </div>
         <div class="flex justify-center mt-10">
@@ -390,41 +443,46 @@
         </div>
       </div>
 
+      <!-- Step 2 -->
       <div id="step-2" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center">
-          Step 2: Terraform Plan
-          <span class="font-mono">(`terraform plan`)</span>
+        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+          Step 2: Terraform Initialization
+          <span class="font-mono text-lg text-gray-500"
+            >(`terraform init`)</span
+          >
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-          <div class="terminal lg:col-span-1" id="terminal-plan">
-            <div id="terraform-plan-container">
-              <div class="line">terraform plan</div>
-              <div class="line">Plan: 1 to add, 0 to change, 0 to destroy.</div>
-              <div class="line">
-                + aws_subnet.barm-terraform-subnet-1 (new resource)
-              </div>
+          <!-- Terminal Column -->
+          <div class="terminal lg:col-span-1" id="terminal-init">
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+              Terminal
+            </h3>
+            <div id="terraform-init">
+              <div class="line">terraform init</div>
+              <div class="line">Initializing the backend...</div>
+              <div class="line">Downloading AWS provider plugin...</div>
+              <div class="line">Backend configured with S3 bucket.</div>
             </div>
           </div>
+          <!-- AWS Cloud Column -->
           <div
-            id="aws-cloud-plan"
+            id="aws-cloud-init"
             class="cloud-section flex flex-col items-center justify-center"
           >
-            <div
-              id="planned-subnet"
-              class="border-4 border-dashed border-blue-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700"
-            >
-              Planned Subnet<br /><span class="text-sm text-gray-400"
-                >(CIDR: 192.168.24.0/24)</span
-              >
-            </div>
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              AWS Cloud
+            </h3>
+            <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
           </div>
+          <!-- S3 Bucket Column -->
           <div
-            id="s3-section-plan"
+            id="s3-section-init"
             class="s3-section flex flex-col items-center justify-center"
           >
-            <div class="file-icon visible" id="state-file-plan">
-              terraform.tfstate
-            </div>
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              S3 Bucket
+            </h3>
+            <div class="file-icon" id="state-file">terraform.tfstate</div>
           </div>
         </div>
         <div class="flex justify-center mt-10">
@@ -437,13 +495,82 @@
         </div>
       </div>
 
+      <!-- Step 3 -->
       <div id="step-3" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center">
-          Step 3: Terraform Apply
-          <span class="font-mono">(`terraform apply`)</span>
+        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+          Step 3: Terraform Plan
+          <span class="font-mono text-lg text-gray-500"
+            >(`terraform plan`)</span
+          >
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+          <!-- Terminal Column -->
+          <div class="terminal lg:col-span-1" id="terminal-plan">
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+              Terminal
+            </h3>
+            <div id="terraform-plan-container">
+              <div class="line">terraform plan</div>
+              <div class="line">Plan: 1 to add, 0 to change, 0 to destroy.</div>
+              <div class="line">
+                + aws_subnet.barm-terraform-subnet-1 (new resource)
+              </div>
+            </div>
+          </div>
+          <!-- AWS Cloud Column -->
+          <div
+            id="aws-cloud-plan"
+            class="cloud-section flex flex-col items-center justify-center"
+          >
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              AWS Cloud
+            </h3>
+            <div
+              id="planned-subnet"
+              class="border-4 border-dashed border-indigo-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700"
+            >
+              Planned Subnet<br /><span class="text-sm text-gray-500"
+                >(CIDR: 192.168.24.0/24)</span
+              >
+            </div>
+          </div>
+          <!-- S3 Bucket Column -->
+          <div
+            id="s3-section-plan"
+            class="s3-section flex flex-col items-center justify-center"
+          >
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              S3 Bucket
+            </h3>
+            <div class="file-icon visible" id="state-file-plan">
+              terraform.tfstate
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center mt-10">
+          <button
+            class="button-animated next-button button-hidden"
+            data-next="step-4"
+          >
+            Next Step
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div id="step-4" class="step-content mb-20">
+        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+          Step 4: Terraform Apply
+          <span class="font-mono text-lg text-gray-500"
+            >(`terraform apply`)</span
+          >
+        </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+          <!-- Terminal Column -->
           <div class="terminal lg:col-span-1" id="terminal-apply">
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+              Terminal
+            </h3>
             <div id="terraform-apply-container">
               <div class="line">terraform apply</div>
               <div class="line">Creating AWS subnet...</div>
@@ -451,25 +578,32 @@
               <div class="line">State updated in S3 bucket.</div>
             </div>
           </div>
+          <!-- AWS Cloud Column -->
           <div
             id="aws-cloud-apply"
             class="cloud-section flex flex-col items-center justify-center"
           >
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              AWS Cloud
+            </h3>
             <div
               id="subnet-container"
-              class="border-4 border-dashed border-blue-400 p-8 opacity-1 transform translate-y-0 transition-all duration-1000"
+              class="border-4 border-dashed border-indigo-400 p-8 opacity-1 transform translate-y-0 transition-all duration-1000"
             >
               Planned Subnet<br />
-              <span class="subnet-info text-sm text-gray-400"
+              <span class="subnet-info text-sm text-gray-500"
                 >(CIDR: 192.168.24.0/24)</span
               >
             </div>
           </div>
-
+          <!-- S3 Bucket Column -->
           <div
             id="s3-section-apply"
             class="s3-section flex flex-col items-center justify-center"
           >
+            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+              S3 Bucket
+            </h3>
             <div class="file-icon visible highlight" id="updated-state-file">
               terraform.tfstate (OLD)
             </div>
@@ -486,16 +620,16 @@
       </div>
     </section>
 
+    <!-- Terraform Code Section -->
     <section
       id="terraform-code"
-      class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-900"
+      class="step min-h-screen flex flex-col items-center justify-center p-10 bg-white"
     >
-      <h2
-        class="text-4xl font-semibold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600"
-      >
+      <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
         Terraform Code Example
       </h2>
-      <div class="code-showcase w-full max-w-6xl">
+      <!-- Code Showcase -->
+      <div class="code-showcase">
         <div class="tabs">
           <div class="tab active" data-tab="resources">Resources</div>
           <div class="tab" data-tab="data">Data</div>
@@ -517,7 +651,7 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
   }
 }
 </code>
-                    </pre>
+          </pre>
           </div>
         </div>
 
@@ -532,7 +666,7 @@ data "aws_vpc" "selected" {
   }
 }
 </code>
-                    </pre>
+          </pre>
           </div>
         </div>
 
@@ -557,7 +691,7 @@ data "aws_vpc" "selected" {
   }
 }
 </code>
-                    </pre>
+          </pre>
           </div>
         </div>
 
@@ -592,7 +726,7 @@ variable "cidr_2" {
   default = "192.168.25.0/24"
 }
 </code>
-                    </pre>
+          </pre>
           </div>
         </div>
 
@@ -604,22 +738,21 @@ locals {
   vpc_id = var.use_dynamic_vpc_id ? data.aws_vpc.selected.id : var.vpc_id
 }
 </code>
-                    </pre>
+          </pre>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Summary Section -->
     <section
       id="summary-section"
-      class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-800"
+      class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-50"
     >
-      <h2
-        class="text-4xl font-semibold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600"
-      >
+      <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
         Summary of Terraform Workflow
       </h2>
-      <ul class="list-none space-y-4 text-lg">
+      <ul class="list-none space-y-4 text-lg text-gray-700">
         <li>
           ✔️
           <span class="font-medium">Initialize and configure backend</span>
@@ -644,6 +777,7 @@ locals {
       </button>
     </section>
 
+    <!-- JavaScript -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const hamburger = document.getElementById("hamburger");
@@ -701,6 +835,43 @@ locals {
             resetAnimation(step.id);
             scrollToSection(step, 300);
             currentStep = stepIndex;
+
+            // Call specific animations based on the current step
+            if (currentStep === 0) {
+              animateStep1();
+            } else if (currentStep === 1) {
+              animateTerminalLines(
+                "terraform-init",
+                () => {
+                  animateStateFile("state-file");
+                },
+                {
+                  duration: 2,
+                  delayBetween: 2,
+                  callbackDelay: 0.5,
+                },
+                () => {
+                  showNextButton(1);
+                }
+              );
+            } else if (currentStep === 2) {
+              animateTerminalLines(
+                "terraform-plan-container",
+                () => {
+                  animatePlannedSubnet();
+                },
+                {
+                  duration: 2,
+                  delayBetween: 2,
+                  callbackDelay: 0.5,
+                },
+                () => {
+                  showNextButton(2);
+                }
+              );
+            } else if (currentStep === 3) {
+              animateApplyStep();
+            }
           }
         }
 
@@ -736,15 +907,14 @@ locals {
           tl.to(lines, {
             opacity: 1,
             y: 0,
-            duration: timings.duration || 2, // Increased duration
+            duration: timings.duration || 2,
             ease: timings.ease || "power1.inOut",
             stagger: {
-              each: timings.delayBetween || 2, // Increased stagger delay
+              each: timings.delayBetween || 2,
               onComplete: callback,
             },
           });
 
-          // If there's an additional callback delay
           if (callback && timings.callbackDelay) {
             tl.call(callback, null, `+=${timings.callbackDelay}`);
           }
@@ -759,7 +929,7 @@ locals {
           gsap.to(stateFile, {
             opacity: 1,
             y: 0,
-            duration: 2, // Increased duration
+            duration: 2,
             ease: "power1.out",
             onComplete: () => {
               stateFile.classList.add("visible");
@@ -777,7 +947,7 @@ locals {
           gsap.to(plannedSubnet, {
             opacity: 1,
             y: 0,
-            duration: 2, // Increased duration
+            duration: 2,
             ease: "power1.out",
             onComplete: () => {
               plannedSubnet.classList.add("opacity-100", "translate-y-0");
@@ -786,82 +956,61 @@ locals {
           });
         }
 
-        function animateCreatedSubnet() {
-          const createdSubnet = document.getElementById("created-subnet");
-          const cloudSection = createdSubnet.parentElement;
-
-          cloudSection.classList.add("highlight-border");
-
-          gsap.to(createdSubnet, {
-            opacity: 1,
-            y: 0,
-            duration: 2, // Increased duration
-            ease: "power1.out",
-            onComplete: () => {
-              createdSubnet.classList.add("opacity-100", "translate-y-0");
-              cloudSection.classList.remove("highlight-border");
-            },
-          });
-        }
-
         function animateStateFileUpdate() {
-          console.log("Updating state file...");
           const updatedStateFile =
             document.getElementById("updated-state-file");
           const s3Section = updatedStateFile.parentElement;
 
           s3Section.classList.add("highlight-border");
 
-          updatedStateFile.textContent = "terraform.tfstate (Updated)";
           gsap.fromTo(
             updatedStateFile,
-            { opacity: 0 }, // Start with opacity 0 (invisible)
+            { opacity: 0 },
             {
-              opacity: 1, // Fade in to full opacity
-              duration: 4, // Duration of the fade-in effect
+              opacity: 1,
+              duration: 4,
               ease: "power1.out",
               onComplete: () => {
                 s3Section.classList.remove("highlight-border");
               },
             }
           );
+          setTimeout(() => {
+            updatedStateFile.textContent = "terraform.tfstate (Updated)";
+          }, 2000);
         }
 
         function animateApplyStep() {
           setTimeout(() => {
             animateStateFileUpdate();
-          }, 2500); // Adjust this delay based on how long you want to wait before updating the state file
+          }, 2500);
 
           animateTerminalLines(
             "terraform-apply-container",
             () => {
-              // Animate the transition from the planned subnet to the created subnet
               gsap.to("#subnet-container", {
-                opacity: 0, // Fade out the planned subnet
-                duration: 1.5, // Fade-out duration
+                opacity: 0,
+                duration: 1.5,
                 ease: "power1.out",
                 onComplete: () => {
-                  // Once faded out, change the content and style to represent the created subnet
                   const subnetContainer =
                     document.getElementById("subnet-container");
                   subnetContainer.innerHTML = `
                     Created Subnet<br>
-                    <span class="subnet-info text-sm text-gray-400">(CIDR: 192.168.24.0/24)</span>
-                `;
-                  // Change border style and color for the created subnet
+                    <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
+                  `;
                   subnetContainer.classList.remove(
                     "border-dashed",
-                    "border-blue-400"
+                    "border-indigo-400"
                   );
                   subnetContainer.classList.add(
                     "border-solid",
-                    "border-blue-500"
+                    "border-indigo-500"
                   );
 
-                  // Fade it back in with the new content and style
                   gsap.to("#subnet-container", {
-                    opacity: 1, // Fade in the created subnet
-                    duration: 1.5, // Fade-in duration
+                    opacity: 1,
+                    duration: 1.5,
                     ease: "power1.in",
                   });
                 },
@@ -887,6 +1036,44 @@ locals {
           }
         }
 
+        function animateFileCreation() {
+          const files = [
+            "file-main-tf",
+            "file-variables-tf",
+            "file-config-json",
+          ];
+          files.forEach((fileId, index) => {
+            const fileElement = document.getElementById(fileId);
+            gsap.to(fileElement, {
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              delay: index * 1,
+              ease: "power1.out",
+              onComplete: () => {
+                fileElement.classList.add("visible");
+              },
+            });
+          });
+        }
+
+        function animateStep1() {
+          animateTerminalLines(
+            "file-creation",
+            () => {
+              animateFileCreation();
+            },
+            {
+              duration: 1,
+              delayBetween: 1,
+              callbackDelay: 0.5,
+            },
+            () => {
+              showNextButton(0);
+            }
+          );
+        }
+
         startButton.addEventListener("click", () => {
           window.location.hash = "#workflow";
         });
@@ -896,23 +1083,10 @@ locals {
             const nextStepId = this.getAttribute("data-next");
             if (nextStepId === "step-2") {
               showStep(1);
-              animateTerminalLines(
-                "terraform-plan-container",
-                () => {
-                  animatePlannedSubnet();
-                },
-                {
-                  duration: 2, // Increased duration
-                  delayBetween: 2, // Increased stagger delay
-                  callbackDelay: 0.5,
-                },
-                () => {
-                  showNextButton(1);
-                }
-              );
             } else if (nextStepId === "step-3") {
               showStep(2);
-              animateApplyStep();
+            } else if (nextStepId === "step-4") {
+              showStep(3);
             }
           });
         });
@@ -950,20 +1124,6 @@ locals {
           if (hash === "workflow") {
             workflowSection.style.display = "flex";
             showStep(0);
-            animateTerminalLines(
-              "terraform-init",
-              () => {
-                animateStateFile("state-file");
-              },
-              {
-                duration: 2, // Increased duration
-                delayBetween: 2, // Increased stagger delay
-                callbackDelay: 0.5,
-              },
-              () => {
-                showNextButton(0);
-              }
-            );
           } else if (hash === "home") {
             allSteps.forEach((step) => (step.style.display = "none"));
             workflowSection.style.display = "none";

@@ -25,6 +25,8 @@
         color: #333;
         font-family: "Inter", sans-serif;
         overflow-x: hidden;
+        margin: 0;
+        padding: 0;
       }
 
       /* Navigation Styles */
@@ -44,6 +46,10 @@
         font-weight: 600;
         transition: color 0.3s, transform 0.3s;
         position: relative;
+      }
+
+      nav a:last-child {
+        margin-right: 0;
       }
 
       nav a::after {
@@ -108,6 +114,8 @@
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
         border: 1px solid #e5e7eb;
         transition: border-color 0.3s;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       .cloud-section,
@@ -120,6 +128,8 @@
         border: 1px solid #e5e7eb;
         transition: border-color 0.3s;
         text-align: center;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       .step-content {
@@ -173,6 +183,8 @@
         margin: 25px 0;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
         overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
       }
 
       .cloud-icon {
@@ -207,19 +219,25 @@
       }
 
       /* Responsive Styles */
+      @media (max-width: 1024px) {
+        .grid-cols-1,
+        .lg\:grid-cols-3 {
+          grid-template-columns: 1fr !important;
+        }
+
+        .step-content {
+          padding: 0;
+        }
+      }
+
       @media (max-width: 768px) {
         nav a {
-          margin-right: 15px;
-          font-size: 0.95rem;
+          margin-right: 0;
+          margin-bottom: 10px;
         }
 
-        .file-icon {
-          width: 140px;
-          height: 140px;
-        }
-
-        pre code {
-          font-size: 0.9rem;
+        .nav-links {
+          flex-direction: column;
         }
 
         .terminal,
@@ -227,6 +245,11 @@
         .s3-section,
         .files-section {
           padding: 20px;
+        }
+
+        .grid {
+          display: flex;
+          flex-direction: column;
         }
 
         .button-animated {
@@ -241,6 +264,25 @@
         h2 {
           font-size: 2rem;
         }
+
+        .file-icon {
+          width: 140px;
+          height: 140px;
+          margin: 10px;
+        }
+
+        .step-content {
+          padding: 0;
+        }
+
+        .grid-cols-1,
+        .lg\:grid-cols-3 {
+          grid-template-columns: 1fr !important;
+        }
+
+        .grid-cols-3 {
+          grid-template-columns: 1fr !important;
+        }
       }
 
       /* Code Showcase Styles */
@@ -248,7 +290,7 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        width: 90%;
+        width: 95%;
         margin: 0 auto;
       }
 
@@ -331,6 +373,7 @@
         background-color: #ffffff;
         border-radius: 12px;
         padding: 20px;
+        box-sizing: border-box;
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
       }
 
@@ -641,16 +684,16 @@
         <div class="code-panels active" id="resources">
           <div class="code-container">
             <pre>
-<code class="language-hcl">
-resource "aws_subnet" "barm-terraform-subnet-1" {
-  vpc_id             = local.vpc_id
-  cidr_block         = var.cidr_1
-  availability_zone  = "${var.region}a"
-  tags = {
-    Name = "barm-terraform-subnet-1"
+  <code class="language-hcl">
+  resource "aws_subnet" "barm-terraform-subnet-1" {
+    vpc_id             = local.vpc_id
+    cidr_block         = var.cidr_1
+    availability_zone  = "${var.region}a"
+    tags = {
+      Name = "barm-terraform-subnet-1"
+    }
   }
-}
-</code>
+  </code>
           </pre>
           </div>
         </div>
@@ -658,14 +701,14 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
         <div class="code-panels" id="data">
           <div class="code-container">
             <pre>
-<code class="language-hcl">
-data "aws_vpc" "selected" {
-  filter {
-    name   = "tag:Name"
-    values = ["DevOps-Workshop"]
+  <code class="language-hcl">
+  data "aws_vpc" "selected" {
+    filter {
+      name   = "tag:Name"
+      values = ["DevOps-Workshop"]
+    }
   }
-}
-</code>
+  </code>
           </pre>
           </div>
         </div>
@@ -673,24 +716,24 @@ data "aws_vpc" "selected" {
         <div class="code-panels" id="config">
           <div class="code-container">
             <pre>
-<code class="language-json">
-{
-  "terraform": {
-    "backend": {
-      "s3": {
-        "bucket": "barm-devops-bucket",
-        "key": "terraform.tfstate",
+  <code class="language-json">
+  {
+    "terraform": {
+      "backend": {
+        "s3": {
+          "bucket": "barm-devops-bucket",
+          "key": "terraform.tfstate",
+          "region": "eu-west-1"
+        }
+      }
+    },
+    "provider": {
+      "aws": {
         "region": "eu-west-1"
       }
     }
-  },
-  "provider": {
-    "aws": {
-      "region": "eu-west-1"
-    }
   }
-}
-</code>
+  </code>
           </pre>
           </div>
         </div>
@@ -698,34 +741,34 @@ data "aws_vpc" "selected" {
         <div class="code-panels" id="variables">
           <div class="code-container">
             <pre>
-<code class="language-hcl">
-variable "region" {
-  type        = string
-  default     = "eu-west-1"
-  description = "The AWS region in which to create resources."
-}
+  <code class="language-hcl">
+  variable "region" {
+    type        = string
+    default     = "eu-west-1"
+    description = "The AWS region in which to create resources."
+  }
 
-variable "vpc_id" {
-  type    = string
-  default = "vpc-01b834daa2d67cdaa"
-}
+  variable "vpc_id" {
+    type    = string
+    default = "vpc-01b834daa2d67cdaa"
+  }
 
-variable "use_dynamic_vpc_id" {
-  type        = bool
-  default     = true
-  description = "Set to true if you want to dynamically get the VPC ID by name."
-}
+  variable "use_dynamic_vpc_id" {
+    type        = bool
+    default     = true
+    description = "Set to true if you want to dynamically get the VPC ID by name."
+  }
 
-variable "cidr_1" {
-  type    = string
-  default = "192.168.24.0/24"
-}
+  variable "cidr_1" {
+    type    = string
+    default = "192.168.24.0/24"
+  }
 
-variable "cidr_2" {
-  type    = string
-  default = "192.168.25.0/24"
-}
-</code>
+  variable "cidr_2" {
+    type    = string
+    default = "192.168.25.0/24"
+  }
+  </code>
           </pre>
           </div>
         </div>
@@ -733,11 +776,11 @@ variable "cidr_2" {
         <div class="code-panels" id="locals">
           <div class="code-container">
             <pre>
-<code class="language-hcl">
-locals {
-  vpc_id = var.use_dynamic_vpc_id ? data.aws_vpc.selected.id : var.vpc_id
-}
-</code>
+  <code class="language-hcl">
+  locals {
+    vpc_id = var.use_dynamic_vpc_id ? data.aws_vpc.selected.id : var.vpc_id
+  }
+  </code>
           </pre>
           </div>
         </div>
@@ -996,9 +1039,9 @@ locals {
                   const subnetContainer =
                     document.getElementById("subnet-container");
                   subnetContainer.innerHTML = `
-                    Created Subnet<br>
-                    <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
-                  `;
+                      Created Subnet<br>
+                      <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
+                    `;
                   subnetContainer.classList.remove(
                     "border-dashed",
                     "border-indigo-400"
@@ -1091,9 +1134,11 @@ locals {
           });
         });
 
-        summaryButton.addEventListener("click", () => {
-          window.location.hash = "#summary-section";
-        });
+        if (summaryButton) {
+          summaryButton.addEventListener("click", () => {
+            window.location.hash = "#summary-section";
+          });
+        }
 
         restartButton.addEventListener("click", () => {
           window.location.hash = "#home";

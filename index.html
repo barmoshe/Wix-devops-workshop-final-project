@@ -245,6 +245,43 @@
             font-weight: 600;
         }
 
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: #e5e7eb;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(18, 18, 18, 0.95);
+                flex-direction: column;
+                align-items: center;
+                padding: 10px 0;
+                gap: 10px;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+
         .tab.active {
             background-color: #3b82f6;
             transform: translateY(-2px);
@@ -279,11 +316,18 @@
 </head>
 
 <body>
-    <nav class="flex justify-center items-center">
-        <a href="#home" class="nav-link">Home</a>
-        <a href="#workflow" class="nav-link">Terraform Workflow</a>
-        <a href="#terraform-code" class="nav-link">Terraform Code</a>
-        <a href="#summary-section" class="nav-link">Summary</a>
+    <nav>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#workflow" class="nav-link">Terraform Workflow</a>
+            <a href="#terraform-code" class="nav-link">Terraform Code</a>
+            <a href="#summary-section" class="nav-link">Summary</a>
+        </div>
     </nav>
 
     <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center px-6">
@@ -424,7 +468,7 @@ data "aws_vpc" "selected" {
                 </div>
             </div>
 
-            
+
 
             <div class="code-panels" id="config">
                 <div class="code-container">
@@ -520,6 +564,23 @@ locals {
     </section>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('nav-links');
+
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+
+            // Handle navigation link clicks
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const navLinks = document.querySelectorAll('nav a');
             const workflowSection = document.getElementById('workflow');
@@ -657,7 +718,7 @@ locals {
             }
 
             function animateStateFileUpdate() {
-                 console.log('Updating state file...');
+                console.log('Updating state file...');
                 const updatedStateFile = document.getElementById('updated-state-file');
                 const s3Section = updatedStateFile.parentElement;
 
@@ -680,8 +741,8 @@ locals {
 
             function animateApplyStep() {
                 setTimeout(() => {
-                        animateStateFileUpdate();
-                    }, 2500);  // Adjust this delay based on how long you want to wait before updating the state file
+                    animateStateFileUpdate();
+                }, 2500);  // Adjust this delay based on how long you want to wait before updating the state file
 
                 animateTerminalLines('terraform-apply-container', () => {
                     // Animate the transition from the planned subnet to the created subnet
@@ -709,7 +770,7 @@ locals {
                         }
                     });
 
-                
+
                 }, {
                     duration: 2,
                     delayBetween: 2,
@@ -750,7 +811,7 @@ locals {
                     } else if (nextStepId === 'step-3') {
                         showStep(2);
                         animateApplyStep();
-                    
+
                     }
                 });
             });

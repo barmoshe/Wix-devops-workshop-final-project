@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terraform AWS Interactive Experience</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/github-dark.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            background-color: #121212;
+            color: #e5e7eb;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        nav {
+            background-color: rgba(18, 18, 18, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 15px 0;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        nav a {
+            color: #e5e7eb;
+            margin-right: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s, transform 0.3s;
+            position: relative;
+        }
+
+
+
+
+        nav a::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s;
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .button-animated {
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            color: #ffffff;
+            border-radius: 9999px;
+            padding: 14px 28px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+            display: inline-block;
+        }
+
+        .button-animated:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+        }
+
+        .button-hidden {
+            display: none;
+        }
+
+        .button-visible {
+            display: inline-block;
+        }
+
+        .terminal {
+            background-color: #1e293b;
+            color: #a5f3fc;
+            padding: 25px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.05rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid #334155;
+            transition: border-color 0.3s;
+        }
+
+        .cloud-section,
+        .s3-section {
+            background-color: #1f2937;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid #334155;
+            transition: border-color 0.3s;
+        }
+
+        .step-content {
+            display: none;
+            width: 100%;
+        }
+
+        .line {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .file-icon {
+            padding: 25px;
+            width: 180px;
+            height: 180px;
+            background-color: #3b82f6;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px;
+            opacity: 0;
+            transform: translateY(30px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+            transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
+        }
+
+        .file-icon.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .file-icon.highlight {
+            background-color: #1e40af;
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.5);
+        }
+
+        .highlight-border {
+            border-color: #22c55e;
+        }
+
+        pre code {
+            display: block;
+            padding: 20px;
+            font-size: 1rem;
+            background: #1e293b;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            overflow-x: auto;
+        }
+
+        .cloud-icon {
+            font-size: 1.2rem;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .file-icon#state-file,
+        .file-icon#state-file-plan,
+        .file-icon#updated-state-file {
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        #summary-section ul {
+            max-width: 600px;
+        }
+
+        #summary-section li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        #summary-section li::before {
+            content: '✔️';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            nav a {
+                margin-right: 15px;
+                font-size: 0.95rem;
+            }
+
+            .file-icon {
+                width: 140px;
+                height: 140px;
+            }
+
+            pre code {
+                font-size: 0.9rem;
+            }
+
+            .terminal,
+            .cloud-section,
+            .s3-section {
+                padding: 20px;
+            }
+
+            .button-animated {
+                padding: 12px 24px;
+                font-size: 0.95rem;
+            }
+        }
+
+        .code-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background-color: #2d3748;
+            color: #e5e7eb;
+            padding: 10px 20px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .code-panels {
+            display: none;
+        }
+
+        .code-panels.active {
+            display: block;
+        }
+
+        .code-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="flex justify-center items-center">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#workflow" class="nav-link">Terraform Workflow</a>
+        <a href="#terraform-code" class="nav-link">Terraform Code</a>
+        <a href="#summary-section" class="nav-link">Summary</a>
+    </nav>
+
+    <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center px-6">
+        <h1
+            class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 mb-6">
+            Automating AWS Subnet Creation with Terraform
+        </h1>
+        <p class="text-xl md:text-2xl mb-10 text-gray-300">Experience a seamless journey through Terraform's integration
+            with AWS, managing infrastructure effortlessly.</p>
+        <button id="start-button" class="button-animated">
+            Get Started
+        </button>
+    </section>
+
+    <section id="workflow" class="step min-h-screen flex flex-col items-center justify-center p-10">
+        <div id="step-1" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center">Step 1: Terraform Initialization <span
+                    class="font-mono">(`terraform init`)</span></h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <div class="terminal lg:col-span-1" id="terminal-init">
+                    <div id="terraform-init">
+                        <div class="line">terraform init</div>
+                        <div class="line">Initializing the backend...</div>
+                        <div class="line">Downloading AWS provider plugin...</div>
+                        <div class="line">Backend configured with S3 bucket.</div>
+                    </div>
+                </div>
+                <div id="aws-cloud-init" class="cloud-section flex flex-col items-center justify-center">
+                    <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
+                </div>
+                <div id="s3-section-init" class="s3-section flex flex-col items-center justify-center">
+                    <div class="file-icon" id="state-file">terraform.tfstate</div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-10">
+                <button class="button-animated next-button button-hidden" data-next="step-2">Next Step</button>
+            </div>
+        </div>
+
+        <div id="step-2" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center">Step 2: Terraform Plan <span
+                    class="font-mono">(`terraform plan`)</span></h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <div class="terminal lg:col-span-1" id="terminal-plan">
+                    <div id="terraform-plan-container">
+                        <div class="line">terraform plan</div>
+                        <div class="line">Plan: 1 to add, 0 to change, 0 to destroy.</div>
+                        <div class="line">+ aws_subnet.barm-terraform-subnet-1 (new resource)</div>
+                    </div>
+                </div>
+                <div id="aws-cloud-plan" class="cloud-section flex flex-col items-center justify-center">
+                    <div id="planned-subnet"
+                        class="border-4 border-dashed border-blue-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700">
+                        Planned Subnet<br><span class="text-sm text-gray-400">(CIDR: 192.168.24.0/24)</span>
+                    </div>
+                </div>
+                <div id="s3-section-plan" class="s3-section flex flex-col items-center justify-center">
+                    <div class="file-icon visible" id="state-file-plan">terraform.tfstate</div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-10">
+                <button class="button-animated next-button button-hidden" data-next="step-3">Next Step</button>
+            </div>
+        </div>
+
+        <div id="step-3" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center">Step 3: Terraform Apply <span
+                    class="font-mono">(`terraform apply`)</span></h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <div class="terminal lg:col-span-1" id="terminal-apply">
+                    <div id="terraform-apply-container">
+                        <div class="line">terraform apply</div>
+                        <div class="line">Creating AWS subnet...</div>
+                        <div class="line">Subnet created successfully!</div>
+                        <div class="line">State updated in S3 bucket.</div>
+                    </div>
+                </div>
+                <div id="aws-cloud-apply" class="cloud-section flex flex-col items-center justify-center">
+                    <div id="subnet-container"
+                        class="border-4 border-dashed border-blue-400 p-8 opacity-1 transform translate-y-0 transition-all duration-1000">
+                        Planned Subnet<br>
+                        <span class="subnet-info text-sm text-gray-400">(CIDR: 192.168.24.0/24)</span>
+                    </div>
+                </div>
+
+                <div id="s3-section-apply" class="s3-section flex flex-col items-center justify-center">
+                    <div class="file-icon visible highlight" id="updated-state-file">terraform.tfstate (Updated)</div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-10">
+                <button id="summary-button" class="button-animated mt-8 button-hidden">View Summary</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="terraform-code" class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-900">
+        <h2
+            class="text-4xl font-semibold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">
+            Terraform Code Example</h2>
+        <div class="code-showcase w-full max-w-6xl">
+            <div class="tabs">
+                <div class="tab active" data-tab="resources">Resources</div>
+                <div class="tab" data-tab="data">Data</div>
+                <div class="tab" data-tab="providers">Providers</div>
+                <div class="tab" data-tab="config">config.tf.json</div>
+                <div class="tab" data-tab="variables">Variables</div>
+                <div class="tab" data-tab="locals">Locals</div>
+            </div>
+
+            <div class="code-panels active" id="resources">
+                <div class="code-container">
+                    <pre>
+<code class="language-hcl">
+resource "aws_subnet" "barm-terraform-subnet-1" {
+  vpc_id             = local.vpc_id
+  cidr_block         = var.cidr_1
+  availability_zone  = "${var.region}a"
+  tags = {
+    Name = "barm-terraform-subnet-1"
+  }
+}
+
+resource "aws_subnet" "barm-terraform-subnet-2" {
+  vpc_id             = local.vpc_id
+  cidr_block         = var.cidr_2
+  availability_zone  = "${var.region}b"
+  tags = {
+    Name = "barm-terraform-subnet-2"
+  }
+}
+</code>
+                    </pre>
+                </div>
+            </div>
+
+            <div class="code-panels" id="data">
+                <div class="code-container">
+                    <pre>
+<code class="language-hcl">
+data "aws_vpc" "selected" {
+  filter {
+    name   = "tag:Name"
+    values = ["DevOps-Workshop"]
+  }
+}
+</code>
+                    </pre>
+                </div>
+            </div>
+
+            <div class="code-panels" id="providers">
+                <div class="code-container">
+                    <pre>
+<code class="language-hcl">
+provider "aws" {
+  region = "us-east-1"
+}
+</code>
+                    </pre>
+                </div>
+            </div>
+
+            <div class="code-panels" id="config">
+                <div class="code-container">
+                    <pre>
+<code class="language-json">
+{
+  "terraform": {
+    "backend": {
+      "s3": {
+        "bucket": "barm-devops-bucket",
+        "key": "terraform.tfstate",
+        "region": "eu-west-1"
+      }
+    }
+  },
+  "provider": {
+    "aws": {
+      "region": "eu-west-1"
+    }
+  }
+}
+</code>
+                    </pre>
+                </div>
+            </div>
+
+            <div class="code-panels" id="variables">
+                <div class="code-container">
+                    <pre>
+<code class="language-hcl">
+variable "region" {
+  type        = string
+  default     = "eu-west-1"
+  description = "The AWS region in which to create resources."
+}
+
+variable "vpc_id" {
+  type    = string
+  default = "vpc-01b834daa2d67cdaa"
+}
+
+variable "use_dynamic_vpc_id" {
+  type        = bool
+  default     = true
+  description = "Set to true if you want to dynamically get the VPC ID by name."
+}
+
+variable "cidr_1" {
+  type    = string
+  default = "192.168.24.0/24"
+}
+
+variable "cidr_2" {
+  type    = string
+  default = "192.168.25.0/24"
+}
+</code>
+                    </pre>
+                </div>
+            </div>
+
+            <div class="code-panels" id="locals">
+                <div class="code-container">
+                    <pre>
+<code class="language-hcl">
+locals {
+  vpc_id = var.use_dynamic_vpc_id ? data.aws_vpc.selected.id : var.vpc_id
+}
+</code>
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="summary-section" class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-800">
+        <h2
+            class="text-4xl font-semibold mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600">
+            Summary of Terraform Workflow</h2>
+        <ul class="list-none space-y-4 text-lg">
+            <li>✔️ <span class="font-medium">Initialize and configure backend</span> using <span
+                    class="font-mono">terraform init</span>.</li>
+            <li>✔️ <span class="font-medium">Preview changes</span> with <span class="font-mono">terraform plan</span>.
+            </li>
+            <li>✔️ <span class="font-medium">Apply changes and create resources</span> using <span
+                    class="font-mono">terraform apply</span>.</li>
+            <li>✔️ <span class="font-medium">Manage state</span> with state files stored in S3 <span
+                    class="font-mono">(terraform.tfstate)</span>.</li>
+        </ul>
+        <button id="restart-button" class="button-animated mt-12">
+            Restart Experience
+        </button>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('nav a');
+            const workflowSection = document.getElementById('workflow');
+            const allSteps = workflowSection.querySelectorAll('.step-content');
+            const startButton = document.getElementById('start-button');
+            const nextButtons = document.querySelectorAll('.next-button');
+            const summaryButton = document.getElementById('summary-button');
+            const restartButton = document.getElementById('restart-button');
+            const tabs = document.querySelectorAll('.tab');
+            const codePanels = document.querySelectorAll('.code-panels');
+
+            let currentStep = 0;
+            const totalSteps = allSteps.length;
+
+            function hideAllSteps() {
+                allSteps.forEach(step => step.style.display = 'none');
+            }
+
+            function resetAnimation(containerId) {
+                const lines = document.querySelectorAll(`#${containerId} .line`);
+                lines.forEach(line => {
+                    line.style.opacity = 0;
+                    line.style.transform = 'translateY(10px)';
+                });
+                const fileIcon = document.getElementById('state-file');
+                if (fileIcon) {
+                    fileIcon.style.opacity = 0;
+                    fileIcon.style.transform = 'translateY(30px)';
+                }
+            }
+
+            function showStep(stepIndex) {
+                hideAllSteps();
+                if (stepIndex >= 0 && stepIndex < totalSteps) {
+                    const step = allSteps[stepIndex];
+                    step.style.display = 'block';
+                    resetAnimation(step.id);
+                    scrollToSection(step, 300);
+                    currentStep = stepIndex;
+                }
+            }
+
+            function scrollToSection(element, offset = 50) {
+                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+
+            function animateTerminalLines(containerId, callback, timings, onComplete) {
+                const lines = document.querySelectorAll(`#${containerId} .line`);
+                const terminal = document.getElementById(containerId).parentElement;
+
+                terminal.classList.add('highlight-border');
+
+                let tl = gsap.timeline({
+                    onComplete: () => {
+                        terminal.classList.remove('highlight-border');
+                        if (onComplete) onComplete();
+                    }
+                });
+
+                tl.to(lines, {
+                    opacity: 1,
+                    y: 0,
+                    duration: timings.duration || 2,          // Increased duration
+                    ease: timings.ease || "power1.inOut",
+                    stagger: {
+                        each: timings.delayBetween || 2,     // Increased stagger delay
+                        onComplete: callback
+                    }
+                });
+
+                // If there's an additional callback delay
+                if (callback && timings.callbackDelay) {
+                    tl.call(callback, null, `+=${timings.callbackDelay}`);
+                }
+            }
+
+            function animateStateFile(stateFileId) {
+                const stateFile = document.getElementById(stateFileId);
+                const s3Section = stateFile.parentElement;
+
+                s3Section.classList.add('highlight-border');
+
+                gsap.to(stateFile, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 2,           // Increased duration
+                    ease: "power1.out",
+                    onComplete: () => {
+                        stateFile.classList.add("visible");
+                        s3Section.classList.remove('highlight-border');
+                    }
+                });
+            }
+
+            function animatePlannedSubnet() {
+                const plannedSubnet = document.getElementById('planned-subnet');
+                const cloudSection = plannedSubnet.parentElement;
+
+                cloudSection.classList.add('highlight-border');
+
+                gsap.to(plannedSubnet, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 2,           // Increased duration
+                    ease: "power1.out",
+                    onComplete: () => {
+                        plannedSubnet.classList.add('opacity-100', 'translate-y-0');
+                        cloudSection.classList.remove('highlight-border');
+                    }
+                });
+            }
+
+            function animateCreatedSubnet() {
+                const createdSubnet = document.getElementById('created-subnet');
+                const cloudSection = createdSubnet.parentElement;
+
+                cloudSection.classList.add('highlight-border');
+
+                gsap.to(createdSubnet, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 2,           // Increased duration
+                    ease: "power1.out",
+                    onComplete: () => {
+                        createdSubnet.classList.add('opacity-100', 'translate-y-0');
+                        cloudSection.classList.remove('highlight-border');
+                    }
+                });
+            }
+
+            function animateStateFileUpdate() {
+                 console.log('Updating state file...');
+                const updatedStateFile = document.getElementById('updated-state-file');
+                const s3Section = updatedStateFile.parentElement;
+
+                s3Section.classList.add('highlight-border');
+
+                updatedStateFile.textContent = 'terraform.tfstate (Updated)';
+                gsap.fromTo(updatedStateFile,
+                    { opacity: 0 },  // Start with opacity 0 (invisible)
+                    {
+                        opacity: 1,   // Fade in to full opacity
+                        duration: 4,  // Duration of the fade-in effect
+                        ease: "power1.out",
+                        onComplete: () => {
+                            s3Section.classList.remove('highlight-border');
+                        }
+                    }
+                );
+            }
+
+
+            function animateApplyStep() {
+                setTimeout(() => {
+                        animateStateFileUpdate();
+                    }, 2500);  // Adjust this delay based on how long you want to wait before updating the state file
+
+                animateTerminalLines('terraform-apply-container', () => {
+                    // Animate the transition from the planned subnet to the created subnet
+                    gsap.to('#subnet-container', {
+                        opacity: 0, // Fade out the planned subnet
+                        duration: 1.5,  // Fade-out duration
+                        ease: "power1.out",
+                        onComplete: () => {
+                            // Once faded out, change the content and style to represent the created subnet
+                            const subnetContainer = document.getElementById('subnet-container');
+                            subnetContainer.innerHTML = `
+                    Created Subnet<br>
+                    <span class="subnet-info text-sm text-gray-400">(CIDR: 192.168.24.0/24)</span>
+                `;
+                            // Change border style and color for the created subnet
+                            subnetContainer.classList.remove('border-dashed', 'border-blue-400');
+                            subnetContainer.classList.add('border-solid', 'border-blue-500');
+
+                            // Fade it back in with the new content and style
+                            gsap.to('#subnet-container', {
+                                opacity: 1, // Fade in the created subnet
+                                duration: 1.5,  // Fade-in duration
+                                ease: "power1.in"
+                            });
+                        }
+                    });
+
+                
+                }, {
+                    duration: 2,
+                    delayBetween: 2,
+                    callbackDelay: 3,
+                }, () => {
+                    summaryButton.classList.remove('button-hidden');
+                    summaryButton.classList.add('button-visible');
+                });
+            }
+
+
+            function showNextButton(stepIndex) {
+                const nextButton = allSteps[stepIndex].querySelector('.next-button');
+                if (nextButton) {
+                    nextButton.classList.remove('button-hidden');
+                    nextButton.classList.add('button-visible');
+                }
+            }
+
+            startButton.addEventListener('click', () => {
+                window.location.hash = '#workflow';
+            });
+
+            nextButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const nextStepId = this.getAttribute('data-next');
+                    if (nextStepId === 'step-2') {
+                        showStep(1);
+                        animateTerminalLines('terraform-plan-container', () => {
+                            animatePlannedSubnet();
+                        }, {
+                            duration: 2,          // Increased duration
+                            delayBetween: 2,      // Increased stagger delay
+                            callbackDelay: 0.5
+                        }, () => {
+                            showNextButton(1);
+                        });
+                    } else if (nextStepId === 'step-3') {
+                        showStep(2);
+                        animateApplyStep();
+                    
+                    }
+                });
+            });
+
+            summaryButton.addEventListener('click', () => {
+                window.location.hash = '#summary-section';
+            });
+
+            restartButton.addEventListener('click', () => {
+                window.location.hash = '#home';
+            });
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    codePanels.forEach(panel => panel.classList.remove('active'));
+                    const target = this.getAttribute('data-tab');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href').substring(1);
+                    window.location.hash = `#${target}`;
+                });
+            });
+
+            function handleHashChange() {
+                const hash = window.location.hash.substring(1);
+
+                if (hash === 'workflow') {
+                    workflowSection.style.display = 'flex';
+                    showStep(0);
+                    animateTerminalLines('terraform-init', () => {
+                        animateStateFile('state-file');
+                    }, {
+                        duration: 2,          // Increased duration
+                        delayBetween: 2,      // Increased stagger delay
+                        callbackDelay: 0.5
+                    }, () => {
+                        showNextButton(0);
+                    });
+                } else if (hash === 'home') {
+                    allSteps.forEach(step => step.style.display = 'none');
+                    workflowSection.style.display = 'none';
+                    document.getElementById('home').style.display = 'flex';
+                } else if (hash === 'terraform-code') {
+                    hideAllSteps();
+                    workflowSection.style.display = 'none';
+                    document.getElementById('terraform-code').style.display = 'block';
+                    scrollToSection(document.getElementById('terraform-code'));
+                } else if (hash === 'summary-section') {
+                    hideAllSteps();
+                    workflowSection.style.display = 'none';
+                    document.getElementById('summary-section').style.display = 'flex';
+                    scrollToSection(document.getElementById('summary-section'));
+                } else {
+                    window.location.hash = '#home';
+                }
+
+                navLinks.forEach(link => link.classList.remove('active'));
+                const activeLink = document.querySelector(`nav a[href="#${hash}"]`);
+                if (activeLink) activeLink.classList.add('active');
+            }
+
+            window.addEventListener('hashchange', handleHashChange);
+
+            hljs.highlightAll();
+
+            handleHashChange();
+        });
+    </script>
+
+</body>
+
+</html>

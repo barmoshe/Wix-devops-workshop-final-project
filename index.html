@@ -387,7 +387,6 @@
             <div class="tabs">
                 <div class="tab active" data-tab="resources">Resources</div>
                 <div class="tab" data-tab="data">Data</div>
-                <div class="tab" data-tab="providers">Providers</div>
                 <div class="tab" data-tab="config">config.tf.json</div>
                 <div class="tab" data-tab="variables">Variables</div>
                 <div class="tab" data-tab="locals">Locals</div>
@@ -403,15 +402,6 @@ resource "aws_subnet" "barm-terraform-subnet-1" {
   availability_zone  = "${var.region}a"
   tags = {
     Name = "barm-terraform-subnet-1"
-  }
-}
-
-resource "aws_subnet" "barm-terraform-subnet-2" {
-  vpc_id             = local.vpc_id
-  cidr_block         = var.cidr_2
-  availability_zone  = "${var.region}b"
-  tags = {
-    Name = "barm-terraform-subnet-2"
   }
 }
 </code>
@@ -434,17 +424,7 @@ data "aws_vpc" "selected" {
                 </div>
             </div>
 
-            <div class="code-panels" id="providers">
-                <div class="code-container">
-                    <pre>
-<code class="language-hcl">
-provider "aws" {
-  region = "us-east-1"
-}
-</code>
-                    </pre>
-                </div>
-            </div>
+            
 
             <div class="code-panels" id="config">
                 <div class="code-container">

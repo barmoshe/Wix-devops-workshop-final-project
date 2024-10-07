@@ -1,689 +1,631 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <!-- Meta tags and head content -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Terraform AWS Interactive Experience</title>
     <!-- External CSS and JS links -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/github.min.css"
-    />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/github.min.css" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <!-- Include Mermaid.js for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
-      /* Google Fonts */
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+        /* Google Fonts */
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
-      body {
-        background-color: #f5f5f5;
-        color: #333;
-        font-family: "Inter", sans-serif;
-        overflow-x: hidden;
-        margin: 0;
-        padding: 0;
-      }
-
-      /* Navigation Styles */
-      nav {
-        background-color: #ffffff;
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        padding: 15px 0;
-        border-bottom: 1px solid #e5e7eb;
-      }
-
-      nav a {
-        color: #333;
-        margin-right: 30px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s, transform 0.3s;
-        position: relative;
-      }
-
-      nav a:last-child {
-        margin-right: 0;
-      }
-
-      nav a::after {
-        content: "";
-        display: block;
-        width: 0;
-        height: 2px;
-        background: #6366f1;
-        transition: width 0.3s;
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-      }
-
-      nav a:hover::after,
-      nav a.active::after {
-        width: 100%;
-      }
-
-      nav a:hover {
-        color: #6366f1;
-        transform: translateY(-2px);
-      }
-
-      /* Button Styles */
-      .button-animated {
-        background: linear-gradient(90deg, #6366f1, #818cf8);
-        color: #ffffff;
-        border-radius: 9999px;
-        padding: 14px 28px;
-        cursor: pointer;
-        font-weight: 700;
-        transition: transform 0.3s ease, box-shadow 0.3s ease,
-          background 0.5s ease;
-        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-        display: inline-block;
-      }
-
-      .button-animated:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 30px rgba(99, 102, 241, 0.6);
-        background: linear-gradient(90deg, #818cf8, #6366f1);
-      }
-
-      .button-hidden {
-        display: none;
-      }
-
-      .button-visible {
-        display: inline-block;
-      }
-
-      /* Terminal and Section Styles */
-      .terminal {
-        background-color: #1f2937;
-        color: #e5e7eb;
-        padding: 25px;
-        font-family: "Fira Code", monospace;
-        font-size: 1rem;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        transition: border-color 0.3s;
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      .cloud-section,
-      .s3-section,
-      .files-section {
-        background-color: #ffffff;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        transition: border-color 0.3s;
-        text-align: center;
-        width: 100%;
-        box-sizing: border-box;
-      }
-
-      .step-content {
-        display: none;
-        width: 100%;
-      }
-
-      .line {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      .file-icon {
-        padding: 25px;
-        width: 180px;
-        height: 180px;
-        background-color: #6366f1;
-        border-radius: 12px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin: 15px;
-        opacity: 0;
-        transform: translateY(30px);
-        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-        transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
-        color: #ffffff;
-        font-weight: 600;
-      }
-
-      .file-icon.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .file-icon.highlight {
-        background-color: #4f46e5;
-        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
-      }
-
-      .highlight-border {
-        border-color: #22c55e;
-      }
-
-      pre code {
-        display: block;
-        padding: 20px;
-        font-size: 1rem;
-        background: #f3f4f6;
-        border-radius: 12px;
-        margin: 25px 0;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-        overflow-x: auto;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-
-      .cloud-icon {
-        font-size: 1.5rem;
-        color: #6366f1;
-        font-weight: 700;
-      }
-
-      .file-icon#state-file,
-      .file-icon#state-file-plan,
-      .file-icon#updated-state-file {
-        font-size: 1rem;
-        text-align: center;
-      }
-
-      #summary-section ul {
-        max-width: 600px;
-      }
-
-      #summary-section li {
-        margin-bottom: 12px;
-        padding-left: 20px;
-        position: relative;
-      }
-
-      #summary-section li::before {
-        content: "✔️";
-        position: absolute;
-        left: 0;
-        top: 0;
-        color: #6366f1;
-      }
-
-      /* Responsive Styles */
-      @media (max-width: 1024px) {
-        .grid-cols-1,
-        .lg\:grid-cols-3 {
-          grid-template-columns: 1fr !important;
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            font-family: "Inter", sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
-        .step-content {
-          padding: 0;
+        /* Navigation Styles */
+        nav {
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
         }
-      }
 
-      @media (max-width: 768px) {
         nav a {
-          margin-right: 0;
-          margin-bottom: 10px;
+            color: #333;
+            margin-right: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s, transform 0.3s;
+            position: relative;
         }
 
-        .nav-links {
-          flex-direction: column;
+        nav a:last-child {
+            margin-right: 0;
         }
 
-        .terminal,
+        nav a::after {
+            content: "";
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #6366f1;
+            transition: width 0.3s;
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: #6366f1;
+            transform: translateY(-2px);
+        }
+
+        /* Button Styles */
+        .button-animated {
+            background: linear-gradient(90deg, #6366f1, #818cf8);
+            color: #ffffff;
+            border-radius: 9999px;
+            padding: 14px 28px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: transform 0.3s ease, box-shadow 0.3s ease,
+                background 0.5s ease;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            display: inline-block;
+        }
+
+        .button-animated:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px rgba(99, 102, 241, 0.6);
+            background: linear-gradient(90deg, #818cf8, #6366f1);
+        }
+
+        .button-hidden {
+            display: none;
+        }
+
+        .button-visible {
+            display: inline-block;
+        }
+
+        /* Terminal and Section Styles */
+        .terminal {
+            background-color: #1f2937;
+            color: #e5e7eb;
+            padding: 25px;
+            font-family: "Fira Code", monospace;
+            font-size: 1rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            transition: border-color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         .cloud-section,
         .s3-section,
         .files-section {
-          padding: 20px;
-        }
-
-        .grid {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .button-animated {
-          padding: 12px 24px;
-          font-size: 0.95rem;
-        }
-
-        h1 {
-          font-size: 2.5rem;
-        }
-
-        h2 {
-          font-size: 2rem;
-        }
-
-        .file-icon {
-          width: 140px;
-          height: 140px;
-          margin: 10px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            transition: border-color 0.3s;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .step-content {
-          padding: 0;
+            display: none;
+            width: 100%;
         }
 
-        .grid-cols-1,
-        .lg\:grid-cols-3 {
-          grid-template-columns: 1fr !important;
+        .line {
+            opacity: 0;
+            transform: translateY(10px);
         }
 
-        .grid-cols-3 {
-          grid-template-columns: 1fr !important;
-        }
-      }
-
-      /* Code Showcase Styles */
-      .code-showcase {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        width: 95%;
-        margin: 0 auto;
-      }
-
-      .tabs {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-
-      .tab {
-        background-color: #e5e7eb;
-        color: #333;
-        padding: 10px 20px;
-        border-radius: 9999px;
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.3s;
-        font-weight: 600;
-      }
-
-      .tab:hover {
-        background-color: #d1d5db;
-      }
-
-      .hamburger {
-        display: none;
-        flex-direction: column;
-        cursor: pointer;
-      }
-
-      .hamburger span {
-        height: 3px;
-        width: 25px;
-        background: #333;
-        margin-bottom: 5px;
-        border-radius: 5px;
-      }
-
-      @media (max-width: 768px) {
-        .nav-links {
-          display: none;
-          position: absolute;
-          top: 60px;
-          left: 0;
-          right: 0;
-          background: #ffffff;
-          flex-direction: column;
-          align-items: center;
-          padding: 10px 0;
-          gap: 10px;
+        .file-icon {
+            padding: 25px;
+            width: 180px;
+            height: 180px;
+            background-color: #6366f1;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px;
+            opacity: 0;
+            transform: translateY(30px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+            transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
+            color: #ffffff;
+            font-weight: 600;
         }
 
-        .nav-links.active {
-          display: flex;
+        .file-icon.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .file-icon.highlight {
+            background-color: #4f46e5;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5);
+        }
+
+        .highlight-border {
+            border-color: #22c55e;
+        }
+
+        pre code {
+            display: block;
+            padding: 20px;
+            font-size: 1rem;
+            background: #f3f4f6;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .cloud-icon {
+            font-size: 1.5rem;
+            color: #6366f1;
+            font-weight: 700;
+        }
+
+        .file-icon#state-file,
+        .file-icon#state-file-plan,
+        .file-icon#updated-state-file {
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        #summary-section ul {
+            max-width: 600px;
+        }
+
+        #summary-section li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        #summary-section li::before {
+            content: "✔️";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #6366f1;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+
+            .grid-cols-1,
+            .lg\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+
+            .step-content {
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav a {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+            }
+
+            .terminal,
+            .cloud-section,
+            .s3-section,
+            .files-section {
+                padding: 20px;
+            }
+
+            .grid {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .button-animated {
+                padding: 12px 24px;
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .file-icon {
+                width: 140px;
+                height: 140px;
+                margin: 10px;
+            }
+
+            .step-content {
+                padding: 0;
+            }
+
+            .grid-cols-1,
+            .lg\:grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+
+            .grid-cols-3 {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Code Showcase Styles */
+        .code-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background-color: #e5e7eb;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            font-weight: 600;
+        }
+
+        .tab:hover {
+            background-color: #d1d5db;
         }
 
         .hamburger {
-          display: flex;
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
         }
-      }
 
-      .tab.active {
-        background-color: #6366f1;
-        color: #ffffff;
-        transform: translateY(-2px);
-      }
+        .hamburger span {
+            height: 3px;
+            width: 25px;
+            background: #333;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
 
-      .code-panels {
-        display: none;
-      }
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: #ffffff;
+                flex-direction: column;
+                align-items: center;
+                padding: 10px 0;
+                gap: 10px;
+            }
 
-      .code-panels.active {
-        display: block;
-      }
+            .nav-links.active {
+                display: flex;
+            }
 
-      .code-container {
-        max-height: 700px;
-        overflow-y: auto;
-        background-color: #ffffff;
-        border-radius: 12px;
-        padding: 20px;
-        box-sizing: border-box;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-      }
+            .hamburger {
+                display: flex;
+            }
+        }
 
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
+        .tab.active {
+            background-color: #6366f1;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
 
-      ::-webkit-scrollbar-track {
-        background: #e5e7eb;
-      }
+        .code-panels {
+            display: none;
+        }
 
-      ::-webkit-scrollbar-thumb {
-        background-color: #6366f1;
-        border-radius: 4px;
-      }
+        .code-panels.active {
+            display: block;
+        }
 
-      /* Smooth Scrolling */
-      html {
-        scroll-behavior: smooth;
-      }
+        .code-container {
+            max-height: 700px;
+            overflow-y: auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #e5e7eb;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #6366f1;
+            border-radius: 4px;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <!-- Navigation -->
     <nav>
-      <div class="container mx-auto flex items-center justify-between px-6">
-        <div class="text-2xl font-bold text-gray-800">Terraform AWS Demo</div>
-        <div class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
+        <div class="container mx-auto flex items-center justify-between px-6">
+            <div class="text-2xl font-bold text-gray-800">Terraform AWS Demo</div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links flex items-center" id="nav-links">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#workflow" class="nav-link">Workflow</a>
+                <a href="#terraform-code" class="nav-link">Code</a>
+                <a href="#summary-section" class="nav-link">Summary</a>
+                <a href="#home-assignment" class="nav-link">Assignment</a>
+            </div>
         </div>
-        <div class="nav-links flex items-center" id="nav-links">
-          <a href="#home" class="nav-link">Home</a>
-          <a href="#workflow" class="nav-link">Workflow</a>
-          <a href="#terraform-code" class="nav-link">Code</a>
-          <a href="#summary-section" class="nav-link">Summary</a>
-        </div>
-      </div>
     </nav>
 
     <!-- Home Section -->
-    <section
-      id="home"
-      class="min-h-screen flex flex-col justify-center items-center text-center px-6"
-    >
-      <h1
-        class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 mb-6"
-      >
-        Automating AWS Subnet Creation with Terraform
-      </h1>
-      <p class="text-xl md:text-2xl mb-10 text-gray-600 max-w-3xl">
-        Experience a seamless journey through Terraform's integration with AWS,
-        managing infrastructure effortlessly.
-      </p>
-      <button id="start-button" class="button-animated">Get Started</button>
+    <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center px-6">
+        <h1
+            class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-600 mb-6">
+            Automating AWS Subnet Creation with Terraform
+        </h1>
+        <p class="text-xl md:text-2xl mb-10 text-gray-600 max-w-3xl">
+            Experience a seamless journey through Terraform's integration with AWS,
+            managing infrastructure effortlessly.
+        </p>
+        <button id="start-button" class="button-animated">Get Started</button>
     </section>
 
     <!-- Workflow Section -->
-    <section
-      id="workflow"
-      class="step min-h-screen flex flex-col items-center justify-center p-10"
-    >
-      <!-- Step 1 -->
-      <div id="step-1" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
-          Step 1: Create Config and TF Files
-        </h2>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-          <!-- Terminal Column -->
-          <div class="terminal lg:col-span-1" id="terminal-create-files">
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
-              Terminal
-            </h3>
-            <div id="file-creation">
-              <div class="line">touch main.tf</div>
-              <div class="line">touch variables.tf</div>
-              <div class="line">touch config.tf.json</div>
-              <div class="line">Files created successfully.</div>
+    <section id="workflow" class="step min-h-screen flex flex-col items-center justify-center p-10">
+        <!-- Step 1 -->
+        <div id="step-1" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+                Step 1: Create Config and TF Files
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-create-files">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+                        Terminal
+                    </h3>
+                    <div id="file-creation">
+                        <div class="line">touch main.tf</div>
+                        <div class="line">touch variables.tf</div>
+                        <div class="line">touch config.tf.json</div>
+                        <div class="line">Files created successfully.</div>
+                    </div>
+                </div>
+                <!-- Files Column -->
+                <div class="files-section flex flex-col items-center justify-center" id="files-section">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        Terraform Files
+                    </h3>
+                    <div class="file-icon" id="file-main-tf">main.tf</div>
+                    <div class="file-icon" id="file-variables-tf">variables.tf</div>
+                    <div class="file-icon" id="file-config-json">config.tf.json</div>
+                </div>
+                <!-- S3 Bucket Column -->
+                <div class="s3-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        S3 Bucket
+                    </h3>
+                    <div class="empty-placeholder text-gray-500">No files yet</div>
+                </div>
             </div>
-          </div>
-          <!-- Files Column -->
-          <div
-            class="files-section flex flex-col items-center justify-center"
-            id="files-section"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              Terraform Files
-            </h3>
-            <div class="file-icon" id="file-main-tf">main.tf</div>
-            <div class="file-icon" id="file-variables-tf">variables.tf</div>
-            <div class="file-icon" id="file-config-json">config.tf.json</div>
-          </div>
-          <!-- S3 Bucket Column -->
-          <div class="s3-section flex flex-col items-center justify-center">
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              S3 Bucket
-            </h3>
-            <div class="empty-placeholder text-gray-500">No files yet</div>
-          </div>
+            <div class="flex justify-center mt-10">
+                <button class="button-animated next-button button-hidden" data-next="step-2">
+                    Next Step
+                </button>
+            </div>
         </div>
-        <div class="flex justify-center mt-10">
-          <button
-            class="button-animated next-button button-hidden"
-            data-next="step-2"
-          >
-            Next Step
-          </button>
-        </div>
-      </div>
 
-      <!-- Step 2 -->
-      <div id="step-2" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
-          Step 2: Terraform Initialization
-          <span class="font-mono text-lg text-gray-500"
-            >(`terraform init`)</span
-          >
-        </h2>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-          <!-- Terminal Column -->
-          <div class="terminal lg:col-span-1" id="terminal-init">
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
-              Terminal
-            </h3>
-            <div id="terraform-init">
-              <div class="line">terraform init</div>
-              <div class="line">Initializing the backend...</div>
-              <div class="line">Downloading AWS provider plugin...</div>
-              <div class="line">Backend configured with S3 bucket.</div>
+        <!-- Step 2 -->
+        <div id="step-2" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+                Step 2: Terraform Initialization
+                <span class="font-mono text-lg text-gray-500">(`terraform init`)</span>
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-init">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+                        Terminal
+                    </h3>
+                    <div id="terraform-init">
+                        <div class="line">terraform init</div>
+                        <div class="line">Initializing the backend...</div>
+                        <div class="line">Downloading AWS provider plugin...</div>
+                        <div class="line">Backend configured with S3 bucket.</div>
+                    </div>
+                </div>
+                <!-- AWS Cloud Column -->
+                <div id="aws-cloud-init" class="cloud-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        AWS Cloud
+                    </h3>
+                    <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
+                </div>
+                <!-- S3 Bucket Column -->
+                <div id="s3-section-init" class="s3-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        S3 Bucket
+                    </h3>
+                    <div class="file-icon" id="state-file">terraform.tfstate</div>
+                </div>
             </div>
-          </div>
-          <!-- AWS Cloud Column -->
-          <div
-            id="aws-cloud-init"
-            class="cloud-section flex flex-col items-center justify-center"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              AWS Cloud
-            </h3>
-            <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
-          </div>
-          <!-- S3 Bucket Column -->
-          <div
-            id="s3-section-init"
-            class="s3-section flex flex-col items-center justify-center"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              S3 Bucket
-            </h3>
-            <div class="file-icon" id="state-file">terraform.tfstate</div>
-          </div>
+            <div class="flex justify-center mt-10">
+                <button class="button-animated next-button button-hidden" data-next="step-3">
+                    Next Step
+                </button>
+            </div>
         </div>
-        <div class="flex justify-center mt-10">
-          <button
-            class="button-animated next-button button-hidden"
-            data-next="step-3"
-          >
-            Next Step
-          </button>
-        </div>
-      </div>
 
-      <!-- Step 3 -->
-      <div id="step-3" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
-          Step 3: Terraform Plan
-          <span class="font-mono text-lg text-gray-500"
-            >(`terraform plan`)</span
-          >
-        </h2>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-          <!-- Terminal Column -->
-          <div class="terminal lg:col-span-1" id="terminal-plan">
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
-              Terminal
-            </h3>
-            <div id="terraform-plan-container">
-              <div class="line">terraform plan</div>
-              <div class="line">Plan: 1 to add, 0 to change, 0 to destroy.</div>
-              <div class="line">
-                + aws_subnet.barm-terraform-subnet-1 (new resource)
-              </div>
+        <!-- Step 3 -->
+        <div id="step-3" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+                Step 3: Terraform Plan
+                <span class="font-mono text-lg text-gray-500">(`terraform plan`)</span>
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-plan">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+                        Terminal
+                    </h3>
+                    <div id="terraform-plan-container">
+                        <div class="line">terraform plan</div>
+                        <div class="line">Plan: 1 to add, 0 to change, 0 to destroy.</div>
+                        <div class="line">
+                            + aws_subnet.barm-terraform-subnet-1 (new resource)
+                        </div>
+                    </div>
+                </div>
+                <!-- AWS Cloud Column -->
+                <div id="aws-cloud-plan" class="cloud-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        AWS Cloud
+                    </h3>
+                    <div id="planned-subnet"
+                        class="border-4 border-dashed border-indigo-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700">
+                        Planned Subnet<br /><span class="text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
+                    </div>
+                </div>
+                <!-- S3 Bucket Column -->
+                <div id="s3-section-plan" class="s3-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        S3 Bucket
+                    </h3>
+                    <div class="file-icon visible" id="state-file-plan">
+                        terraform.tfstate
+                    </div>
+                </div>
             </div>
-          </div>
-          <!-- AWS Cloud Column -->
-          <div
-            id="aws-cloud-plan"
-            class="cloud-section flex flex-col items-center justify-center"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              AWS Cloud
-            </h3>
-            <div
-              id="planned-subnet"
-              class="border-4 border-dashed border-indigo-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700"
-            >
-              Planned Subnet<br /><span class="text-sm text-gray-500"
-                >(CIDR: 192.168.24.0/24)</span
-              >
+            <div class="flex justify-center mt-10">
+                <button class="button-animated next-button button-hidden" data-next="step-4">
+                    Next Step
+                </button>
             </div>
-          </div>
-          <!-- S3 Bucket Column -->
-          <div
-            id="s3-section-plan"
-            class="s3-section flex flex-col items-center justify-center"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              S3 Bucket
-            </h3>
-            <div class="file-icon visible" id="state-file-plan">
-              terraform.tfstate
-            </div>
-          </div>
         </div>
-        <div class="flex justify-center mt-10">
-          <button
-            class="button-animated next-button button-hidden"
-            data-next="step-4"
-          >
-            Next Step
-          </button>
-        </div>
-      </div>
 
-      <!-- Step 4 -->
-      <div id="step-4" class="step-content mb-20">
-        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
-          Step 4: Terraform Apply
-          <span class="font-mono text-lg text-gray-500"
-            >(`terraform apply`)</span
-          >
-        </h2>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-          <!-- Terminal Column -->
-          <div class="terminal lg:col-span-1" id="terminal-apply">
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
-              Terminal
-            </h3>
-            <div id="terraform-apply-container">
-              <div class="line">terraform apply</div>
-              <div class="line">Creating AWS subnet...</div>
-              <div class="line">Subnet created successfully!</div>
-              <div class="line">State updated in S3 bucket.</div>
+        <!-- Step 4 -->
+        <div id="step-4" class="step-content mb-20">
+            <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+                Step 4: Terraform Apply
+                <span class="font-mono text-lg text-gray-500">(`terraform apply`)</span>
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-apply">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+                        Terminal
+                    </h3>
+                    <div id="terraform-apply-container">
+                        <div class="line">terraform apply</div>
+                        <div class="line">Creating AWS subnet...</div>
+                        <div class="line">Subnet created successfully!</div>
+                        <div class="line">State updated in S3 bucket.</div>
+                    </div>
+                </div>
+                <!-- AWS Cloud Column -->
+                <div id="aws-cloud-apply" class="cloud-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        AWS Cloud
+                    </h3>
+                    <div id="subnet-container"
+                        class="border-4 border-dashed border-indigo-400 p-8 opacity-1 transform translate-y-0 transition-all duration-1000">
+                        Planned Subnet<br />
+                        <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
+                    </div>
+                </div>
+                <!-- S3 Bucket Column -->
+                <div id="s3-section-apply" class="s3-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        S3 Bucket
+                    </h3>
+                    <div class="file-icon visible highlight" id="updated-state-file">
+                        terraform.tfstate (OLD)
+                    </div>
+                </div>
             </div>
-          </div>
-          <!-- AWS Cloud Column -->
-          <div
-            id="aws-cloud-apply"
-            class="cloud-section flex flex-col items-center justify-center"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              AWS Cloud
-            </h3>
-            <div
-              id="subnet-container"
-              class="border-4 border-dashed border-indigo-400 p-8 opacity-1 transform translate-y-0 transition-all duration-1000"
-            >
-              Planned Subnet<br />
-              <span class="subnet-info text-sm text-gray-500"
-                >(CIDR: 192.168.24.0/24)</span
-              >
+            <div class="flex justify-center mt-10">
+                <button id="summary-button" class="button-animated mt-8 button-hidden">
+                    View Summary
+                </button>
             </div>
-          </div>
-          <!-- S3 Bucket Column -->
-          <div
-            id="s3-section-apply"
-            class="s3-section flex flex-col items-center justify-center"
-          >
-            <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-              S3 Bucket
-            </h3>
-            <div class="file-icon visible highlight" id="updated-state-file">
-              terraform.tfstate (OLD)
-            </div>
-          </div>
         </div>
-        <div class="flex justify-center mt-10">
-          <button
-            id="summary-button"
-            class="button-animated mt-8 button-hidden"
-          >
-            View Summary
-          </button>
-        </div>
-      </div>
     </section>
 
     <!-- Terraform Code Section -->
-    <section
-      id="terraform-code"
-      class="step min-h-screen flex flex-col items-center justify-center p-10 bg-white"
-    >
-      <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
-        Terraform Code Example
-      </h2>
-      <!-- Code Showcase -->
-      <div class="code-showcase">
-        <div class="tabs">
-          <div class="tab active" data-tab="resources">Resources</div>
-          <div class="tab" data-tab="data">Data</div>
-          <div class="tab" data-tab="config">config.tf.json</div>
-          <div class="tab" data-tab="variables">Variables</div>
-          <div class="tab" data-tab="locals">Locals</div>
-        </div>
+    <section id="terraform-code" class="step min-h-screen flex flex-col items-center justify-center p-10 bg-white">
+        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+            Terraform Code Example
+        </h2>
+        <!-- Code Showcase -->
+        <div class="code-showcase">
+            <div class="tabs">
+                <div class="tab active" data-tab="resources">Resources</div>
+                <div class="tab" data-tab="data">Data</div>
+                <div class="tab" data-tab="config">config.tf.json</div>
+                <div class="tab" data-tab="variables">Variables</div>
+                <div class="tab" data-tab="locals">Locals</div>
+            </div>
 
-        <div class="code-panels active" id="resources">
-          <div class="code-container">
-            <pre>
+            <div class="code-panels active" id="resources">
+                <div class="code-container">
+                    <pre>
   <code class="language-hcl">
   resource "aws_subnet" "barm-terraform-subnet-1" {
     vpc_id             = local.vpc_id
@@ -694,13 +636,13 @@
     }
   }
   </code>
-          </pre>
-          </div>
-        </div>
+            </pre>
+                </div>
+            </div>
 
-        <div class="code-panels" id="data">
-          <div class="code-container">
-            <pre>
+            <div class="code-panels" id="data">
+                <div class="code-container">
+                    <pre>
   <code class="language-hcl">
   data "aws_vpc" "selected" {
     filter {
@@ -709,13 +651,13 @@
     }
   }
   </code>
-          </pre>
-          </div>
-        </div>
+            </pre>
+                </div>
+            </div>
 
-        <div class="code-panels" id="config">
-          <div class="code-container">
-            <pre>
+            <div class="code-panels" id="config">
+                <div class="code-container">
+                    <pre>
   <code class="language-json">
   {
     "terraform": {
@@ -734,13 +676,13 @@
     }
   }
   </code>
-          </pre>
-          </div>
-        </div>
+            </pre>
+                </div>
+            </div>
 
-        <div class="code-panels" id="variables">
-          <div class="code-container">
-            <pre>
+            <div class="code-panels" id="variables">
+                <div class="code-container">
+                    <pre>
   <code class="language-hcl">
   variable "region" {
     type        = string
@@ -769,435 +711,610 @@
     default = "192.168.25.0/24"
   }
   </code>
-          </pre>
-          </div>
-        </div>
+            </pre>
+                </div>
+            </div>
 
-        <div class="code-panels" id="locals">
-          <div class="code-container">
-            <pre>
+            <div class="code-panels" id="locals">
+                <div class="code-container">
+                    <pre>
   <code class="language-hcl">
   locals {
     vpc_id = var.use_dynamic_vpc_id ? data.aws_vpc.selected.id : var.vpc_id
   }
   </code>
-          </pre>
-          </div>
+            </pre>
+                </div>
+            </div>
         </div>
-      </div>
     </section>
 
     <!-- Summary Section -->
-    <section
-      id="summary-section"
-      class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-50"
-    >
-      <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
-        Summary of Terraform Workflow
-      </h2>
-      <ul class="list-none space-y-4 text-lg text-gray-700">
-        <li>
-          ✔️
-          <span class="font-medium">Initialize and configure backend</span>
-          using <span class="font-mono">terraform init</span>.
-        </li>
-        <li>
-          ✔️ <span class="font-medium">Preview changes</span> with
-          <span class="font-mono">terraform plan</span>.
-        </li>
-        <li>
-          ✔️
-          <span class="font-medium">Apply changes and create resources</span>
-          using <span class="font-mono">terraform apply</span>.
-        </li>
-        <li>
-          ✔️ <span class="font-medium">Manage state</span> with state files
-          stored in S3 <span class="font-mono">(terraform.tfstate)</span>.
-        </li>
-      </ul>
-      <button id="restart-button" class="button-animated mt-12">
-        Restart Experience
-      </button>
+    <section id="summary-section" class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gray-50">
+        <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800">
+            Summary of Terraform Workflow
+        </h2>
+        <ul class="list-none space-y-4 text-lg text-gray-700">
+            <li>
+                ✔️
+                <span class="font-medium">Initialize and configure backend</span>
+                using <span class="font-mono">terraform init</span>.
+            </li>
+            <li>
+                ✔️ <span class="font-medium">Preview changes</span> with
+                <span class="font-mono">terraform plan</span>.
+            </li>
+            <li>
+                ✔️
+                <span class="font-medium">Apply changes and create resources</span>
+                using <span class="font-mono">terraform apply</span>.
+            </li>
+            <li>
+                ✔️ <span class="font-medium">Manage state</span> with state files
+                stored in S3 <span class="font-mono">(terraform.tfstate)</span>.
+            </li>
+        </ul>
+        <button id="restart-button" class="button-animated mt-12">
+            Restart Experience
+        </button>
     </section>
+
+    <!-- Assignment Section -->
+    <section id="home-assignment"
+        class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800">
+        <div class="container max-w-7xl mx-auto p-6 rounded-lg shadow-lg bg-white">
+            <h1 class="text-4xl font-bold text-center text-gray-900 mb-10">Terraform Project Diagrams</h1>
+
+            <!-- High-Level Architecture Diagram -->
+            <div class="diagram-container mb-8">
+                <h2 data-toggle="collapse" data-target="#architecture-diagram"
+                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                    High-Level Architecture Diagram <span class="transform rotate-180">&#x25BC;</span>
+                </h2>
+                <div id="architecture-diagram"
+                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                    <div class="mermaid">
+                        graph TB
+                        subgraph VPC["VPC: DevOps-Workshop"]
+                        direction TB
+                        Subnet1["Subnet 1<br>CIDR: 192.168.24.0/24<br>AZ: eu-west-1a"]
+                        Subnet2["Subnet 2<br>CIDR: 192.168.25.0/24<br>AZ: eu-west-1b"]
+                        RouteTable["Route Table"]
+                        Subnet1 -->|Associated| RouteTable
+                        Subnet2 -->|Associated| RouteTable
+                        end
+                        NATGateway["NAT Gateway<br>devops-workshop-nat"]
+                        RouteTable -->|Route: 0.0.0.0/0<br>via NAT Gateway| NATGateway
+                        Internet["Internet"]
+                        NATGateway --> Internet
+                        S3Bucket["S3 Bucket<br>barm-devops-bucket"]
+                        IAMUser["IAM User<br>${iam_user_name}"]
+                        IAMUser -->|Access via Bucket Policy| S3Bucket
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Networking Diagram -->
+            <div class="diagram-container mb-8">
+                <h2 data-toggle="collapse" data-target="#networking-diagram"
+                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                    Networking Diagram <span class="transform rotate-180">&#x25BC;</span>
+                </h2>
+                <div id="networking-diagram"
+                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                    <div class="mermaid">
+                        graph TB
+                        subgraph VPC["VPC: DevOps-Workshop"]
+                        direction TB
+                        Subnet1["Subnet 1<br>192.168.24.0/24<br>eu-west-1a"]
+                        Subnet2["Subnet 2<br>192.168.25.0/24<br>eu-west-1b"]
+                        RouteTable["Route Table"]
+                        Subnet1 --> RouteTable
+                        Subnet2 --> RouteTable
+                        RouteTable -->|0.0.0.0/0| NATGateway
+                        end
+                        NATGateway["NAT Gateway"]
+                        NATGateway --> Internet[("Internet")]
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- IAM and S3 Bucket Policy Diagram -->
+            <div class="diagram-container mb-8">
+                <h2 data-toggle="collapse" data-target="#iam-s3-diagram"
+                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                    IAM and S3 Bucket Policy Diagram <span class="transform rotate-180">&#x25BC;</span>
+                </h2>
+                <div id="iam-s3-diagram"
+                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                    <div class="mermaid">
+                        graph LR
+                        IAMUser["IAM User<br>${iam_user_name}"]
+                        S3Bucket["S3 Bucket<br>barm-devops-bucket"]
+                        IAMUser -- "s3:ListBucket<br>s3:GetObject<br>s3:PutObject<br>s3:DeleteObject" --> S3Bucket
+                        classDef userStyle fill:#b3d9ff,stroke:#000,stroke-width:1px;
+                        classDef bucketStyle fill:#ffe6b3,stroke:#000,stroke-width:1px;
+                        class IAMUser userStyle;
+                        class S3Bucket bucketStyle;
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* Advanced styles for collapsible diagrams and animations */
+        .collapse-header {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .collapse-header:hover {
+            background-color: #e2e8f0;
+        }
+
+        .collapse.show {
+            display: block;
+        }
+
+        .collapse:not(.show) {
+            display: none;
+        }
+
+        .diagram-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mermaid {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #architecture-diagram,
+        #networking-diagram,
+        #iam-s3-diagram {
+            transition: height 0.3s ease-in-out;
+            overflow: hidden;
+        }
+
+        h2 span.rotate-180 {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .collapse.show h2 span.rotate-180 {
+            transform: rotate(0deg);
+        }
+
+        h2 span {
+            transition: transform 0.3s;
+        }
+
+        /* Styling for the Mermaid diagrams */
+        .mermaid {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .mermaid .userStyle {
+            fill: #b3d9ff;
+            stroke: #000;
+        }
+
+        .mermaid .bucketStyle {
+            fill: #ffe6b3;
+            stroke: #000;
+        }
+    </style>
+
 
     <!-- JavaScript -->
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const hamburger = document.getElementById("hamburger");
-        const navLinks = document.getElementById("nav-links");
+        // Function to toggle collapse sections
+        document.querySelectorAll('.collapse-header').forEach(header => {
+            header.addEventListener('click', function () {
+                const target = document.querySelector(this.dataset.target);
 
-        hamburger.addEventListener("click", () => {
-          navLinks.classList.toggle("active");
+                // Toggle the collapse content visibility
+                target.classList.toggle('show');
+
+                // Rotate the arrow icon
+                this.querySelector('.arrow').classList.toggle('rotate-180');
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const hamburger = document.getElementById("hamburger");
+            const navLinks = document.getElementById("nav-links");
+
+            hamburger.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+            });
+
+            // Handle navigation link clicks
+            const links = document.querySelectorAll(".nav-link");
+            links.forEach((link) => {
+                link.addEventListener("click", () => {
+                    navLinks.classList.remove("active");
+                });
+            });
         });
 
-        // Handle navigation link clicks
-        const links = document.querySelectorAll(".nav-link");
-        links.forEach((link) => {
-          link.addEventListener("click", () => {
-            navLinks.classList.remove("active");
-          });
-        });
-      });
+        document.addEventListener("DOMContentLoaded", function () {
+            const navLinks = document.querySelectorAll("nav a");
+            const workflowSection = document.getElementById("workflow");
+            const allSteps = workflowSection.querySelectorAll(".step-content");
+            const startButton = document.getElementById("start-button");
+            const nextButtons = document.querySelectorAll(".next-button");
+            const summaryButton = document.getElementById("summary-button");
+            const restartButton = document.getElementById("restart-button");
+            const tabs = document.querySelectorAll(".tab");
+            const codePanels = document.querySelectorAll(".code-panels");
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const navLinks = document.querySelectorAll("nav a");
-        const workflowSection = document.getElementById("workflow");
-        const allSteps = workflowSection.querySelectorAll(".step-content");
-        const startButton = document.getElementById("start-button");
-        const nextButtons = document.querySelectorAll(".next-button");
-        const summaryButton = document.getElementById("summary-button");
-        const restartButton = document.getElementById("restart-button");
-        const tabs = document.querySelectorAll(".tab");
-        const codePanels = document.querySelectorAll(".code-panels");
+            let currentStep = 0;
+            const totalSteps = allSteps.length;
 
-        let currentStep = 0;
-        const totalSteps = allSteps.length;
-
-        function hideAllSteps() {
-          allSteps.forEach((step) => (step.style.display = "none"));
-        }
-
-        function resetAnimation(containerId) {
-          const lines = document.querySelectorAll(`#${containerId} .line`);
-          lines.forEach((line) => {
-            line.style.opacity = 0;
-            line.style.transform = "translateY(10px)";
-          });
-          const fileIcon = document.getElementById("state-file");
-          if (fileIcon) {
-            fileIcon.style.opacity = 0;
-            fileIcon.style.transform = "translateY(30px)";
-          }
-        }
-
-        function showStep(stepIndex) {
-          hideAllSteps();
-          if (stepIndex >= 0 && stepIndex < totalSteps) {
-            const step = allSteps[stepIndex];
-            step.style.display = "block";
-            resetAnimation(step.id);
-            scrollToSection(step, 300);
-            currentStep = stepIndex;
-
-            // Call specific animations based on the current step
-            if (currentStep === 0) {
-              animateStep1();
-            } else if (currentStep === 1) {
-              animateTerminalLines(
-                "terraform-init",
-                () => {
-                  animateStateFile("state-file");
-                },
-                {
-                  duration: 2,
-                  delayBetween: 2,
-                  callbackDelay: 0.5,
-                },
-                () => {
-                  showNextButton(1);
-                }
-              );
-            } else if (currentStep === 2) {
-              animateTerminalLines(
-                "terraform-plan-container",
-                () => {
-                  animatePlannedSubnet();
-                },
-                {
-                  duration: 2,
-                  delayBetween: 2,
-                  callbackDelay: 0.5,
-                },
-                () => {
-                  showNextButton(2);
-                }
-              );
-            } else if (currentStep === 3) {
-              animateApplyStep();
+            function hideAllSteps() {
+                allSteps.forEach((step) => (step.style.display = "none"));
             }
-          }
-        }
 
-        function scrollToSection(element, offset = 50) {
-          const elementPosition =
-            element.getBoundingClientRect().top + window.scrollY;
-          const offsetPosition = elementPosition - offset;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth",
-          });
-        }
-
-        function animateTerminalLines(
-          containerId,
-          callback,
-          timings,
-          onComplete
-        ) {
-          const lines = document.querySelectorAll(`#${containerId} .line`);
-          const terminal = document.getElementById(containerId).parentElement;
-
-          terminal.classList.add("highlight-border");
-
-          let tl = gsap.timeline({
-            onComplete: () => {
-              terminal.classList.remove("highlight-border");
-              if (onComplete) onComplete();
-            },
-          });
-
-          tl.to(lines, {
-            opacity: 1,
-            y: 0,
-            duration: timings.duration || 2,
-            ease: timings.ease || "power1.inOut",
-            stagger: {
-              each: timings.delayBetween || 2,
-              onComplete: callback,
-            },
-          });
-
-          if (callback && timings.callbackDelay) {
-            tl.call(callback, null, `+=${timings.callbackDelay}`);
-          }
-        }
-
-        function animateStateFile(stateFileId) {
-          const stateFile = document.getElementById(stateFileId);
-          const s3Section = stateFile.parentElement;
-
-          s3Section.classList.add("highlight-border");
-
-          gsap.to(stateFile, {
-            opacity: 1,
-            y: 0,
-            duration: 2,
-            ease: "power1.out",
-            onComplete: () => {
-              stateFile.classList.add("visible");
-              s3Section.classList.remove("highlight-border");
-            },
-          });
-        }
-
-        function animatePlannedSubnet() {
-          const plannedSubnet = document.getElementById("planned-subnet");
-          const cloudSection = plannedSubnet.parentElement;
-
-          cloudSection.classList.add("highlight-border");
-
-          gsap.to(plannedSubnet, {
-            opacity: 1,
-            y: 0,
-            duration: 2,
-            ease: "power1.out",
-            onComplete: () => {
-              plannedSubnet.classList.add("opacity-100", "translate-y-0");
-              cloudSection.classList.remove("highlight-border");
-            },
-          });
-        }
-
-        function animateStateFileUpdate() {
-          const updatedStateFile =
-            document.getElementById("updated-state-file");
-          const s3Section = updatedStateFile.parentElement;
-
-          s3Section.classList.add("highlight-border");
-
-          gsap.fromTo(
-            updatedStateFile,
-            { opacity: 0 },
-            {
-              opacity: 1,
-              duration: 4,
-              ease: "power1.out",
-              onComplete: () => {
-                s3Section.classList.remove("highlight-border");
-              },
+            function resetAnimation(containerId) {
+                const lines = document.querySelectorAll(`#${containerId} .line`);
+                lines.forEach((line) => {
+                    line.style.opacity = 0;
+                    line.style.transform = "translateY(10px)";
+                });
+                const fileIcon = document.getElementById("state-file");
+                if (fileIcon) {
+                    fileIcon.style.opacity = 0;
+                    fileIcon.style.transform = "translateY(30px)";
+                }
             }
-          );
-          setTimeout(() => {
-            updatedStateFile.textContent = "terraform.tfstate (Updated)";
-          }, 2000);
-        }
 
-        function animateApplyStep() {
-          setTimeout(() => {
-            animateStateFileUpdate();
-          }, 2500);
+            function showStep(stepIndex) {
+                hideAllSteps();
+                if (stepIndex >= 0 && stepIndex < totalSteps) {
+                    const step = allSteps[stepIndex];
+                    step.style.display = "block";
+                    resetAnimation(step.id);
+                    scrollToSection(step, 300);
+                    currentStep = stepIndex;
 
-          animateTerminalLines(
-            "terraform-apply-container",
-            () => {
-              gsap.to("#subnet-container", {
-                opacity: 0,
-                duration: 1.5,
-                ease: "power1.out",
-                onComplete: () => {
-                  const subnetContainer =
-                    document.getElementById("subnet-container");
-                  subnetContainer.innerHTML = `
+                    // Call specific animations based on the current step
+                    if (currentStep === 0) {
+                        animateStep1();
+                    } else if (currentStep === 1) {
+                        animateTerminalLines(
+                            "terraform-init",
+                            () => {
+                                animateStateFile("state-file");
+                            },
+                            {
+                                duration: 2,
+                                delayBetween: 2,
+                                callbackDelay: 0.5,
+                            },
+                            () => {
+                                showNextButton(1);
+                            }
+                        );
+                    } else if (currentStep === 2) {
+                        animateTerminalLines(
+                            "terraform-plan-container",
+                            () => {
+                                animatePlannedSubnet();
+                            },
+                            {
+                                duration: 2,
+                                delayBetween: 2,
+                                callbackDelay: 0.5,
+                            },
+                            () => {
+                                showNextButton(2);
+                            }
+                        );
+                    } else if (currentStep === 3) {
+                        animateApplyStep();
+                    }
+                }
+            }
+
+            function scrollToSection(element, offset = 50) {
+                const elementPosition =
+                    element.getBoundingClientRect().top + window.scrollY;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth",
+                });
+            }
+
+            function animateTerminalLines(
+                containerId,
+                callback,
+                timings,
+                onComplete
+            ) {
+                const lines = document.querySelectorAll(`#${containerId} .line`);
+                const terminal = document.getElementById(containerId).parentElement;
+
+                terminal.classList.add("highlight-border");
+
+                let tl = gsap.timeline({
+                    onComplete: () => {
+                        terminal.classList.remove("highlight-border");
+                        if (onComplete) onComplete();
+                    },
+                });
+
+                tl.to(lines, {
+                    opacity: 1,
+                    y: 0,
+                    duration: timings.duration || 2,
+                    ease: timings.ease || "power1.inOut",
+                    stagger: {
+                        each: timings.delayBetween || 2,
+                        onComplete: callback,
+                    },
+                });
+
+                if (callback && timings.callbackDelay) {
+                    tl.call(callback, null, `+=${timings.callbackDelay}`);
+                }
+            }
+
+            function animateStateFile(stateFileId) {
+                const stateFile = document.getElementById(stateFileId);
+                const s3Section = stateFile.parentElement;
+
+                s3Section.classList.add("highlight-border");
+
+                gsap.to(stateFile, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 2,
+                    ease: "power1.out",
+                    onComplete: () => {
+                        stateFile.classList.add("visible");
+                        s3Section.classList.remove("highlight-border");
+                    },
+                });
+            }
+
+            function animatePlannedSubnet() {
+                const plannedSubnet = document.getElementById("planned-subnet");
+                const cloudSection = plannedSubnet.parentElement;
+
+                cloudSection.classList.add("highlight-border");
+
+                gsap.to(plannedSubnet, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 2,
+                    ease: "power1.out",
+                    onComplete: () => {
+                        plannedSubnet.classList.add("opacity-100", "translate-y-0");
+                        cloudSection.classList.remove("highlight-border");
+                    },
+                });
+            }
+
+            function animateStateFileUpdate() {
+                const updatedStateFile =
+                    document.getElementById("updated-state-file");
+                const s3Section = updatedStateFile.parentElement;
+
+                s3Section.classList.add("highlight-border");
+
+                gsap.fromTo(
+                    updatedStateFile,
+                    { opacity: 0 },
+                    {
+                        opacity: 1,
+                        duration: 4,
+                        ease: "power1.out",
+                        onComplete: () => {
+                            s3Section.classList.remove("highlight-border");
+                        },
+                    }
+                );
+                setTimeout(() => {
+                    updatedStateFile.textContent = "terraform.tfstate (Updated)";
+                }, 2000);
+            }
+
+            function animateApplyStep() {
+                setTimeout(() => {
+                    animateStateFileUpdate();
+                }, 2500);
+
+                animateTerminalLines(
+                    "terraform-apply-container",
+                    () => {
+                        gsap.to("#subnet-container", {
+                            opacity: 0,
+                            duration: 1.5,
+                            ease: "power1.out",
+                            onComplete: () => {
+                                const subnetContainer =
+                                    document.getElementById("subnet-container");
+                                subnetContainer.innerHTML = `
                       Created Subnet<br>
                       <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
                     `;
-                  subnetContainer.classList.remove(
-                    "border-dashed",
-                    "border-indigo-400"
-                  );
-                  subnetContainer.classList.add(
-                    "border-solid",
-                    "border-indigo-500"
-                  );
+                                subnetContainer.classList.remove(
+                                    "border-dashed",
+                                    "border-indigo-400"
+                                );
+                                subnetContainer.classList.add(
+                                    "border-solid",
+                                    "border-indigo-500"
+                                );
 
-                  gsap.to("#subnet-container", {
-                    opacity: 1,
-                    duration: 1.5,
-                    ease: "power1.in",
-                  });
-                },
-              });
-            },
-            {
-              duration: 2,
-              delayBetween: 2,
-              callbackDelay: 3,
-            },
-            () => {
-              summaryButton.classList.remove("button-hidden");
-              summaryButton.classList.add("button-visible");
+                                gsap.to("#subnet-container", {
+                                    opacity: 1,
+                                    duration: 1.5,
+                                    ease: "power1.in",
+                                });
+                            },
+                        });
+                    },
+                    {
+                        duration: 2,
+                        delayBetween: 2,
+                        callbackDelay: 3,
+                    },
+                    () => {
+                        summaryButton.classList.remove("button-hidden");
+                        summaryButton.classList.add("button-visible");
+                    }
+                );
             }
-          );
-        }
 
-        function showNextButton(stepIndex) {
-          const nextButton = allSteps[stepIndex].querySelector(".next-button");
-          if (nextButton) {
-            nextButton.classList.remove("button-hidden");
-            nextButton.classList.add("button-visible");
-          }
-        }
+            function showNextButton(stepIndex) {
+                const nextButton = allSteps[stepIndex].querySelector(".next-button");
+                if (nextButton) {
+                    nextButton.classList.remove("button-hidden");
+                    nextButton.classList.add("button-visible");
+                }
+            }
 
-        function animateFileCreation() {
-          const files = [
-            "file-main-tf",
-            "file-variables-tf",
-            "file-config-json",
-          ];
-          files.forEach((fileId, index) => {
-            const fileElement = document.getElementById(fileId);
-            gsap.to(fileElement, {
-              opacity: 1,
-              y: 0,
-              duration: 1,
-              delay: index * 1,
-              ease: "power1.out",
-              onComplete: () => {
-                fileElement.classList.add("visible");
-              },
+            function animateFileCreation() {
+                const files = [
+                    "file-main-tf",
+                    "file-variables-tf",
+                    "file-config-json",
+                ];
+                files.forEach((fileId, index) => {
+                    const fileElement = document.getElementById(fileId);
+                    gsap.to(fileElement, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        delay: index * 1,
+                        ease: "power1.out",
+                        onComplete: () => {
+                            fileElement.classList.add("visible");
+                        },
+                    });
+                });
+            }
+
+            function animateStep1() {
+                animateTerminalLines(
+                    "file-creation",
+                    () => {
+                        animateFileCreation();
+                    },
+                    {
+                        duration: 1,
+                        delayBetween: 1,
+                        callbackDelay: 0.5,
+                    },
+                    () => {
+                        showNextButton(0);
+                    }
+                );
+            }
+
+            startButton.addEventListener("click", () => {
+                window.location.hash = "#workflow";
             });
-          });
-        }
 
-        function animateStep1() {
-          animateTerminalLines(
-            "file-creation",
-            () => {
-              animateFileCreation();
-            },
-            {
-              duration: 1,
-              delayBetween: 1,
-              callbackDelay: 0.5,
-            },
-            () => {
-              showNextButton(0);
+            nextButtons.forEach((button) => {
+                button.addEventListener("click", function () {
+                    const nextStepId = this.getAttribute("data-next");
+                    if (nextStepId === "step-2") {
+                        showStep(1);
+                    } else if (nextStepId === "step-3") {
+                        showStep(2);
+                    } else if (nextStepId === "step-4") {
+                        showStep(3);
+                    }
+                });
+            });
+
+            if (summaryButton) {
+                summaryButton.addEventListener("click", () => {
+                    window.location.hash = "#summary-section";
+                });
             }
-          );
-        }
 
-        startButton.addEventListener("click", () => {
-          window.location.hash = "#workflow";
-        });
+            restartButton.addEventListener("click", () => {
+                window.location.hash = "#home";
+            });
 
-        nextButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            const nextStepId = this.getAttribute("data-next");
-            if (nextStepId === "step-2") {
-              showStep(1);
-            } else if (nextStepId === "step-3") {
-              showStep(2);
-            } else if (nextStepId === "step-4") {
-              showStep(3);
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", function () {
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    this.classList.add("active");
+
+                    codePanels.forEach((panel) => panel.classList.remove("active"));
+                    const target = this.getAttribute("data-tab");
+                    document.getElementById(target).classList.add("active");
+                });
+            });
+
+            navLinks.forEach((link) => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    const target = this.getAttribute("href").substring(1);
+                    window.location.hash = `#${target}`;
+                });
+            });
+
+            function handleHashChange() {
+                const hash = window.location.hash.substring(1);
+
+                if (hash === "workflow") {
+                    workflowSection.style.display = "flex";
+                    showStep(0);
+                } else if (hash === "home") {
+                    allSteps.forEach((step) => (step.style.display = "none"));
+                    workflowSection.style.display = "none";
+                    document.getElementById("home").style.display = "flex";
+                } else if (hash === "terraform-code") {
+                    hideAllSteps();
+                    workflowSection.style.display = "none";
+                    document.getElementById("terraform-code").style.display = "block";
+                    scrollToSection(document.getElementById("terraform-code"));
+                } else if (hash === "summary-section") {
+                    hideAllSteps();
+                    workflowSection.style.display = "none";
+                    document.getElementById("summary-section").style.display = "flex";
+                    scrollToSection(document.getElementById("summary-section"));
+                } else if (hash === "home-assignment") {
+                    hideAllSteps();
+                    workflowSection.style.display = "none";
+                    document.getElementById("home-assignment").style.display = "flex";
+                    scrollToSection(document.getElementById("home-assignment"));
+                } else {
+                    window.location.hash = "#home";
+                }
+
+                navLinks.forEach((link) => link.classList.remove("active"));
+                const activeLink = document.querySelector(`nav a[href="#${hash}"]`);
+                if (activeLink) activeLink.classList.add("active");
             }
-          });
+
+            window.addEventListener("hashchange", handleHashChange);
+
+            hljs.highlightAll();
+
+            handleHashChange();
         });
-
-        if (summaryButton) {
-          summaryButton.addEventListener("click", () => {
-            window.location.hash = "#summary-section";
-          });
-        }
-
-        restartButton.addEventListener("click", () => {
-          window.location.hash = "#home";
-        });
-
-        tabs.forEach((tab) => {
-          tab.addEventListener("click", function () {
-            tabs.forEach((t) => t.classList.remove("active"));
-            this.classList.add("active");
-
-            codePanels.forEach((panel) => panel.classList.remove("active"));
-            const target = this.getAttribute("data-tab");
-            document.getElementById(target).classList.add("active");
-          });
-        });
-
-        navLinks.forEach((link) => {
-          link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const target = this.getAttribute("href").substring(1);
-            window.location.hash = `#${target}`;
-          });
-        });
-
-        function handleHashChange() {
-          const hash = window.location.hash.substring(1);
-
-          if (hash === "workflow") {
-            workflowSection.style.display = "flex";
-            showStep(0);
-          } else if (hash === "home") {
-            allSteps.forEach((step) => (step.style.display = "none"));
-            workflowSection.style.display = "none";
-            document.getElementById("home").style.display = "flex";
-          } else if (hash === "terraform-code") {
-            hideAllSteps();
-            workflowSection.style.display = "none";
-            document.getElementById("terraform-code").style.display = "block";
-            scrollToSection(document.getElementById("terraform-code"));
-          } else if (hash === "summary-section") {
-            hideAllSteps();
-            workflowSection.style.display = "none";
-            document.getElementById("summary-section").style.display = "flex";
-            scrollToSection(document.getElementById("summary-section"));
-          } else {
-            window.location.hash = "#home";
-          }
-
-          navLinks.forEach((link) => link.classList.remove("active"));
-          const activeLink = document.querySelector(`nav a[href="#${hash}"]`);
-          if (activeLink) activeLink.classList.add("active");
-        }
-
-        window.addEventListener("hashchange", handleHashChange);
-
-        hljs.highlightAll();
-
-        handleHashChange();
-      });
     </script>
-  </body>
+</body>
+
 </html>

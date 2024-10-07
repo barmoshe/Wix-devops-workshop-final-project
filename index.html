@@ -189,7 +189,11 @@
             color: #6366f1;
             font-weight: 700;
         }
-
+.ter-h{
+    transform: scale(1.1);
+    color: purple;
+    background-color: #f3f4f6;
+}
         .file-icon#state-file,
         .file-icon#state-file-plan,
         .file-icon#updated-state-file {
@@ -485,7 +489,7 @@
                         Terminal
                     </h3>
                     <div id="terraform-init">
-                        <div class="line">terraform init</div>
+                        <div class="line ter-h">terraform init</div>
                         <div class="line">Initializing the backend...</div>
                         <div class="line">Downloading AWS provider plugin...</div>
                         <div class="line">Backend configured with S3 bucket.</div>
@@ -526,7 +530,7 @@
                         Terminal
                     </h3>
                     <div id="terraform-plan-container">
-                        <div class="line">terraform plan</div>
+                        <div class="line ter-h">terraform plan</div>
                         <div class="line">Plan: 1 to add, 0 to change, 0 to destroy.</div>
                         <div class="line">
                             + aws_subnet.barm-terraform-subnet-1 (new resource)
@@ -573,7 +577,7 @@
                         Terminal
                     </h3>
                     <div id="terraform-apply-container">
-                        <div class="line">terraform apply</div>
+                        <div class="line ter-h">terraform apply</div>
                         <div class="line">Creating AWS subnet...</div>
                         <div class="line">Subnet created successfully!</div>
                         <div class="line">State updated in S3 bucket.</div>
@@ -764,6 +768,18 @@
         class="step min-h-screen flex flex-col items-center justify-center p-10 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800">
         <div class="container max-w-7xl mx-auto p-6 rounded-lg shadow-lg bg-white">
             <h1 class="text-4xl font-bold text-center text-gray-900 mb-10">Terraform Project Diagrams</h1>
+
+            <!--assignment instructions-->
+            <div class="diagram-container mb-8">
+                <h2 data-toggle="collapse" data-target="#assignment-instructions"
+                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                    Assignment Instructions <span class="transform rotate-180">&#x25BC;</span>
+                </h2>
+                <div id="assignment-instructions"
+                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+
+                    
+                </div>
 
             <!-- High-Level Architecture Diagram -->
             <div class="diagram-container mb-8">
@@ -987,7 +1003,7 @@
                     const step = allSteps[stepIndex];
                     step.style.display = "block";
                     resetAnimation(step.id);
-                    scrollToSection(step, 300);
+                    scrollToSection(step, 130);
                     currentStep = stepIndex;
 
                     // Call specific animations based on the current step

@@ -45,7 +45,6 @@ resource "aws_route_table_association" "subnet2_association" {
   route_table_id = aws_route_table.route_table.id
 }
 
-# Create a bucket policy to allow only the specified user to access the bucket
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = "barm-devops-bucket"
 

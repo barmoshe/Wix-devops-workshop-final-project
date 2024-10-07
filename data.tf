@@ -12,6 +12,9 @@ data "aws_nat_gateway" "selected" {
   }
   state = "available"
 }
+data "aws_iam_user" "current_user" {
+  user_name = var.iam_user_name
+}
 
 data "aws_iam_policy_document" "bucket_policy" {
   statement {

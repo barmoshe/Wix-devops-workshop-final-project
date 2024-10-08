@@ -70,7 +70,7 @@ Follow these steps to use the project:
 ## Terraform AWS Demo
 
 here is link to website created show case how terraform works with some diagrams and code examples <br>
-[Click here 😎 ](https://barmoshe.github.io/Wix-devops-workshop-terraform/#home-assignment)
+[Click here 😎 ](https://barmoshe.github.io/Wix-devops-workshop-terraform/#home-assignment)<br>
 ![ezgif-1-4ac75a5283](https://github.com/user-attachments/assets/db3edb33-efff-4596-a843-83201f3d7fc5)
 
 

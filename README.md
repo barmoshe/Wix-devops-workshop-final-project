@@ -1,69 +1,27 @@
-# Terraform Project for AWS Subnet Creation
+# Terraform Project for AWS Infrastructure Setup
 
-This Terraform project provisions AWS resources, specifically creating a subnet with a CIDR block `192.168.24.0/24` within a specified VPC.
+This Terraform project provisions and manages AWS resources, including VPCs, subnets, route tables, NAT gateways, and S3 bucket policies. The project is designed to create a secure and scalable network infrastructure for DevOps workshops.
 
-## Project Files
+## High-Level Architecture Diagram
 
-### 1. `config.tf.json`
-
-This file configures the Terraform backend, which specifies where the Terraform state file is stored. In this case, an S3 bucket is used.
-
-```json
-{
-  "terraform": {
-    "backend": {
-      "s3": {
-        "bucket": "barm-devops-bucket",
-        "key": "terraform.tfstate",
-        "region": "eu-west-1"
-      }
-    }
-  }
-}
+```mermaid
+graph TB
+  subgraph VPC["VPC: DevOps-Workshop"]
+    direction TB
+    Subnet1["Subnet 1<br>CIDR: 192.168.24.0/24<br>AZ: eu-west-1a"]
+    Subnet2["Subnet 2<br>CIDR: 192.168.25.0/24<br>AZ: eu-west-1b"]
+    RouteTable["Route Table"]
+    Subnet1 -->|Associated| RouteTable
+    Subnet2 -->|Associated| RouteTable
+    end
+    NATGateway["NAT Gateway<br>devops-workshop-nat"]
+    RouteTable -->|Route: 0.0.0.0/0<br>via NAT Gateway| NATGateway
+    Internet["Internet"]
+    NATGateway --> Internet
+    S3Bucket["S3 Bucket<br>barm-devops-bucket"]
+    IAMUser["IAM User<br>${iam_user_name}"]
+    IAMUser -->|Access via Bucket Policy| S3Bucket
 ```
-
-### 2. `vars.tf`
-
-This file defines the project variables. Key variables include the VPC ID and CIDR block for the subnet.
-
-Example variable definition:
-
-```hcl
-variable "subnet_cidr1" {
-  description = "The CIDR block for the first subnet"
-  default     = "192.168.24.0/24"
-}
-```
-
-### 3. `main.tf`
-
-The primary Terraform configuration file where resources are defined. The following example creates an AWS subnet with the specified CIDR block:
-
-```hcl
-resource "aws_subnet" "barm-terraform-subnet-1" {
-  vpc_id            = var.vpc_id
-  cidr_block        = var.subnet_cidr1
-  availability_zone = "${var.region}a"    # Availability zone based on region variable
-
-  tags = {
-    Name = "barm-terraform-subnet-1"
-  }
-}
-```
-
-### 4. `providers.tf`
-
-This file defines the provider configurations for the project. The AWS provider is configured to use the `eu-west-1` region.
-
-```hcl
-provider "aws" {
-  region = "eu-west-1"
-}
-```
-
-### 5. `output.tf`
-
-Defines the output variables of the project. These outputs capture and display useful information about the resources created by Terraform.
 
 ## Usage
 
@@ -73,9 +31,9 @@ Follow these steps to use the project:
 
    Clone the repository to your local machine:
 
-   ```bash
-   git clone <repository-url>
-   ```
+```bash
+ git clone  https://github.com/barmoshe/Wix-devops-workshop-terraform
+```
 
 2. **Initialize Terraform**
 
@@ -87,13 +45,13 @@ Follow these steps to use the project:
 
 3. **Apply the Terraform Configuration**
 
-   Apply the configuration to create the subnet and other resources:
+   Apply the configuration to create the infrastructure:
 
    ```bash
    terraform apply
    ```
 
-   Make sure you have the correct AWS credentials set up.
+   You will be prompted to provide values for variables if they are not set with defaults. Ensure you have the correct AWS credentials configured.
 
 4. **Destroy the Resources**
 
@@ -105,5 +63,17 @@ Follow these steps to use the project:
 
 ## Prerequisites
 
-- AWS account and credentials configured
+- AWS account with necessary permissions
+- AWS CLI configured with appropriate credentials
 - Terraform installed on your local machine
+
+## Terraform AWS Demo
+
+here is link to website created show case how terraform works with some diagrams and code examples <br>
+[Click here 😎 ](https://barmoshe.github.io/Wix-devops-workshop-terraform/#home-assignment)
+
+## Additional Information
+
+- **VPC and Subnets**: The project creates subnets within a specified or existing VPC, allowing for organized and secure network segmentation.
+- **Route Tables and NAT Gateway**: Ensures that subnets have proper routing, enabling internet access through a NAT gateway while maintaining security.
+- **S3 Bucket Policy**: Secures the S3 bucket by restricting access to a specific IAM user, enhancing security and access control.

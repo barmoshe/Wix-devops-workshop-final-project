@@ -169,6 +169,8 @@
 
         .highlight-border {
             border-color: #22c55e;
+            /* change border thickness */
+            border-width: 4px;
         }
 
         pre code {
@@ -439,6 +441,17 @@
                 Step 1: Create Config and TF Files
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
+                
+                <!-- Files Column -->
+                <div class="files-section flex flex-col items-center justify-center" id="files-section">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        Terraform Files
+                    </h3>
+                    <div class="file-icon" id="file-main-tf">main.tf</div>
+                    <div class="file-icon" id="file-variables-tf">variables.tf</div>
+                    <div class="file-icon" id="file-config-json">config.tf.json</div>
+                </div>
+
                 <!-- Terminal Column -->
                 <div class="terminal lg:col-span-1" id="terminal-create-files">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
@@ -450,15 +463,6 @@
                         <div class="line">touch config.tf.json</div>
                         <div class="line">Files created successfully.</div>
                     </div>
-                </div>
-                <!-- Files Column -->
-                <div class="files-section flex flex-col items-center justify-center" id="files-section">
-                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-                        Terraform Files
-                    </h3>
-                    <div class="file-icon" id="file-main-tf">main.tf</div>
-                    <div class="file-icon" id="file-variables-tf">variables.tf</div>
-                    <div class="file-icon" id="file-config-json">config.tf.json</div>
                 </div>
                 <!-- S3 Bucket Column -->
                 <div class="s3-section flex flex-col items-center justify-center">
@@ -482,8 +486,16 @@
                 <span class="font-mono text-lg text-gray-500">(`terraform init`)</span>
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-                <!-- Terminal Column -->
-                <div class="terminal lg:col-span-1" id="terminal-init">
+               
+                <!-- AWS Cloud Column -->
+                <div id="aws-cloud-init" class="cloud-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        AWS Cloud
+                    </h3>
+                    <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
+                </div>
+                 <!-- Terminal Column -->
+                 <div class="terminal lg:col-span-1" id="terminal-init">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
                         Terminal
                     </h3>
@@ -493,13 +505,6 @@
                         <div class="line">Downloading AWS provider plugin...</div>
                         <div class="line">Backend configured with S3 bucket.</div>
                     </div>
-                </div>
-                <!-- AWS Cloud Column -->
-                <div id="aws-cloud-init" class="cloud-section flex flex-col items-center justify-center">
-                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-                        AWS Cloud
-                    </h3>
-                    <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
                 </div>
                 <!-- S3 Bucket Column -->
                 <div id="s3-section-init" class="s3-section flex flex-col items-center justify-center">
@@ -523,8 +528,18 @@
                 <span class="font-mono text-lg text-gray-500">(`terraform plan`)</span>
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-                <!-- Terminal Column -->
-                <div class="terminal lg:col-span-1" id="terminal-plan">
+                <!-- AWS Cloud Column -->
+                <div id="aws-cloud-plan" class="cloud-section flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
+                        AWS Cloud
+                    </h3>
+                    <div id="planned-subnet"
+                        class="border-4 border-dashed border-indigo-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700">
+                        Planned Subnet<br /><span class="text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
+                    </div>
+                </div>
+                  <!-- Terminal Column -->
+                  <div class="terminal lg:col-span-1" id="terminal-plan">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
                         Terminal
                     </h3>
@@ -534,16 +549,6 @@
                         <div class="line">
                             + aws_subnet.barm-terraform-subnet-1 (new resource)
                         </div>
-                    </div>
-                </div>
-                <!-- AWS Cloud Column -->
-                <div id="aws-cloud-plan" class="cloud-section flex flex-col items-center justify-center">
-                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
-                        AWS Cloud
-                    </h3>
-                    <div id="planned-subnet"
-                        class="border-4 border-dashed border-indigo-400 p-8 opacity-0 transform translate-y-10 transition-all duration-700">
-                        Planned Subnet<br /><span class="text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
                     </div>
                 </div>
                 <!-- S3 Bucket Column -->
@@ -570,18 +575,7 @@
                 <span class="font-mono text-lg text-gray-500">(`terraform apply`)</span>
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-                <!-- Terminal Column -->
-                <div class="terminal lg:col-span-1" id="terminal-apply">
-                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
-                        Terminal
-                    </h3>
-                    <div id="terraform-apply-container">
-                        <div class="line ter-h">terraform apply</div>
-                        <div class="line">Creating AWS subnet...</div>
-                        <div class="line">Subnet created successfully!</div>
-                        <div class="line">State updated in S3 bucket.</div>
-                    </div>
-                </div>
+  
                 <!-- AWS Cloud Column -->
                 <div id="aws-cloud-apply" class="cloud-section flex flex-col items-center justify-center">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
@@ -593,13 +587,25 @@
                         <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
                     </div>
                 </div>
+                              <!-- Terminal Column -->
+                              <div class="terminal lg:col-span-1" id="terminal-apply">
+                                <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+                                    Terminal
+                                </h3>
+                                <div id="terraform-apply-container">
+                                    <div class="line ter-h">terraform apply</div>
+                                    <div class="line">Creating AWS subnet...</div>
+                                    <div class="line">Subnet created successfully!</div>
+                                    <div class="line">State updated in S3 bucket.</div>
+                                </div>
+                            </div>
                 <!-- S3 Bucket Column -->
                 <div id="s3-section-apply" class="s3-section flex flex-col items-center justify-center">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
                         S3 Bucket
                     </h3>
                     <div class="file-icon visible highlight" id="updated-state-file">
-                        terraform.tfstate (OLD)
+                        terraform.tfstate
                     </div>
                 </div>
             </div>

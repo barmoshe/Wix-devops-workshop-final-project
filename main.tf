@@ -73,6 +73,8 @@ module "eks" {
     aws_subnet.barm-terraform-subnet-1.id,
     aws_subnet.barm-terraform-subnet-2.id
   ]
+    cluster_endpoint_public_access  = true
+
 
   cluster_security_group_additional_rules = {
     allow_https = {

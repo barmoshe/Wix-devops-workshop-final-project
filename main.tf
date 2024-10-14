@@ -65,29 +65,37 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.24.0"
 
-  # EKS cluster configuration
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
+  cluster_name    = var.cluster_name    
+  cluster_version = var.cluster_version 
 
-  # VPC and Subnets from the previous task
   vpc_id = local.vpc_id
   subnet_ids = [
     aws_subnet.barm-terraform-subnet-1.id,
     aws_subnet.barm-terraform-subnet-2.id
   ]
 
+  cluster_security_group_additional_rules = {
+    allow_https = {
+      description = "Allow inbound HTTPS traffic from trusted IPs"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      type        = "ingress" 
+      cidr_blocks = [aws_subnet.barm-terraform-subnet-1.cidr_block, aws_subnet.barm-terraform-subnet-2.cidr_block]
+    }
+  }
   eks_managed_node_groups = {
     barm_nodegroup = {
       desired_capacity = 2
       min_capacity     = 1
       max_capacity     = 3
-      instance_type    = "t2.micro" # Set machine type to t2.micro
+      instance_type    = "t2.micro" 
     }
   }
 
   access_entries = {
     barm_user = {
-      principal_arn = data.aws_iam_user.current_user.arn # Use 'barm-user'
+      principal_arn = data.aws_iam_user.current_user.arn 
     }
   }
 }

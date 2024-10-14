@@ -85,11 +85,6 @@ Follow these steps to use the project:
 - AWS CLI configured with appropriate credentials
 - Terraform installed on your local machine
 
-## Terraform AWS Demo
-
-Here is a link to a website showcasing how Terraform works with some diagrams and code examples: <br>
-[Click here 😎](https://barmoshe.github.io/Wix-devops-workshop-terraform/#home-assignment)<br>
-![Architecture Diagram](https://github.com/user-attachments/assets/db3edb33-efff-4596-a843-83201f3d7fc5)
 
 ## Additional Information
 

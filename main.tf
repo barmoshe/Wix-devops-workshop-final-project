@@ -58,8 +58,8 @@ module "eks" {
   version = "20.24.0"
 
   # EKS cluster configuration
-  cluster_name    = "barm-cluster"
-  cluster_version = "1.29"
+  cluster_name    = var.cluster_name
+  cluster_version = var.cluster_version
 
   # VPC and Subnets from the previous task
   vpc_id = local.vpc_id

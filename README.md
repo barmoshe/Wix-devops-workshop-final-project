@@ -85,6 +85,8 @@ Follow these steps to use the project:
 - AWS CLI configured with appropriate credentials
 - Terraform installed on your local machine
 
+## Devops Workshop assignments
+[see assigments here ](https://barmoshe.github.io/Wix-devops-workshop-terraform/#home-assignment)
 
 ## Additional Information
 

@@ -50,3 +50,32 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 
   policy = data.aws_iam_policy_document.bucket_policy.json
 }
+
+
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.24.0"
+
+  # EKS cluster configuration
+  cluster_name    = "barm-cluster"
+  cluster_version = "1.29"
+
+  # VPC and Subnets from the previous task
+  vpc_id = local.vpc_id
+  subnet_ids = [
+    aws_subnet.barm-terraform-subnet-1.id,
+    aws_subnet.barm-terraform-subnet-2.id
+  ]
+
+  eks_managed_node_groups = {
+    barm_nodegroup = {
+      desired_capacity = 2
+      min_capacity     = 1
+      max_capacity     = 3
+      instance_type    = "t2.micro" # Set machine type to t2.micro
+    }
+  }
+
+}
+

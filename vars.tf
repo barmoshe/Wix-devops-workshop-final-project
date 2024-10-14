@@ -8,11 +8,20 @@ variable "vpc_id" {
   type    = string
   default = "vpc-01b834daa2d67cdaa"
 }
+variable "gateway_id" {
+  type    = string
+  default = "nat-0a1b2c3d4e5f6g7h8"
+}
 
 variable "use_dynamic_vpc_id" {
   type        = bool
   default     = true
   description = "Set to true if you want to dynamically get the VPC ID by name."
+}
+variable "use_dynamic_gateway_id" {
+  type        = bool
+  default     = true
+  description = "Set to true if you want to dynamically get the NAT Gateway ID by name."
 }
 
 variable "cidr_1" {
@@ -29,4 +38,13 @@ variable "iam_user_name" {
   type        = string
   description = "The name of the IAM user to grant access to the S3 bucket."
   default     = "barm-user"
+}
+
+variable "cluster_version" {
+  type    = string
+  default = "1.29"
+}
+variable "cluster_name" {
+  type    = string
+  default = "barm-cluster"
 }

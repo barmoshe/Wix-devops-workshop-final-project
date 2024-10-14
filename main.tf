@@ -50,3 +50,55 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 
   policy = data.aws_iam_policy_document.bucket_policy.json
 }
+
+resource "aws_eks_access_policy_association" "barm_user_access" {
+  cluster_name  = var.cluster_name
+  principal_arn = data.aws_iam_user.current_user.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.24.0"
+
+  cluster_name    = var.cluster_name    
+  cluster_version = var.cluster_version 
+
+  vpc_id = local.vpc_id
+  subnet_ids = [
+    aws_subnet.barm-terraform-subnet-1.id,
+    aws_subnet.barm-terraform-subnet-2.id
+  ]
+    cluster_endpoint_public_access  = true
+
+
+  cluster_security_group_additional_rules = {
+    allow_https = {
+      description = "Allow inbound HTTPS traffic from trusted IPs"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      type        = "ingress" 
+      cidr_blocks = [aws_subnet.barm-terraform-subnet-1.cidr_block, aws_subnet.barm-terraform-subnet-2.cidr_block]
+    }
+  }
+  eks_managed_node_groups = {
+    barm_nodegroup = {
+      desired_capacity = 2
+      min_capacity     = 1
+      max_capacity     = 3
+      instance_type    = "t2.micro" 
+    }
+  }
+
+  access_entries = {
+    barm_user = {
+      principal_arn = data.aws_iam_user.current_user.arn 
+    }
+  }
+}
+

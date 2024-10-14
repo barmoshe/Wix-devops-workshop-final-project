@@ -191,11 +191,13 @@
             color: #6366f1;
             font-weight: 700;
         }
-.ter-h{
-    transform: scale(1.1);
-    color: purple;
-    background-color: #f3f4f6;
-}
+
+        .ter-h {
+            transform: scale(1.1);
+            color: purple;
+            background-color: #f3f4f6;
+        }
+
         .file-icon#state-file,
         .file-icon#state-file-plan,
         .file-icon#updated-state-file {
@@ -441,7 +443,7 @@
                 Step 1: Create Config and TF Files
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-                
+
                 <!-- Files Column -->
                 <div class="files-section flex flex-col items-center justify-center" id="files-section">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
@@ -486,7 +488,7 @@
                 <span class="font-mono text-lg text-gray-500">(`terraform init`)</span>
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-               
+
                 <!-- AWS Cloud Column -->
                 <div id="aws-cloud-init" class="cloud-section flex flex-col items-center justify-center">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
@@ -494,8 +496,8 @@
                     </h3>
                     <div id="aws-cloud-icon" class="cloud-icon">AWS Cloud</div>
                 </div>
-                 <!-- Terminal Column -->
-                 <div class="terminal lg:col-span-1" id="terminal-init">
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-init">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
                         Terminal
                     </h3>
@@ -538,8 +540,8 @@
                         Planned Subnet<br /><span class="text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
                     </div>
                 </div>
-                  <!-- Terminal Column -->
-                  <div class="terminal lg:col-span-1" id="terminal-plan">
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-plan">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
                         Terminal
                     </h3>
@@ -575,7 +577,7 @@
                 <span class="font-mono text-lg text-gray-500">(`terraform apply`)</span>
             </h2>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 w-full">
-  
+
                 <!-- AWS Cloud Column -->
                 <div id="aws-cloud-apply" class="cloud-section flex flex-col items-center justify-center">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
@@ -587,18 +589,18 @@
                         <span class="subnet-info text-sm text-gray-500">(CIDR: 192.168.24.0/24)</span>
                     </div>
                 </div>
-                              <!-- Terminal Column -->
-                              <div class="terminal lg:col-span-1" id="terminal-apply">
-                                <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
-                                    Terminal
-                                </h3>
-                                <div id="terraform-apply-container">
-                                    <div class="line ter-h">terraform apply</div>
-                                    <div class="line">Creating AWS subnet...</div>
-                                    <div class="line">Subnet created successfully!</div>
-                                    <div class="line">State updated in S3 bucket.</div>
-                                </div>
-                            </div>
+                <!-- Terminal Column -->
+                <div class="terminal lg:col-span-1" id="terminal-apply">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-gray-100">
+                        Terminal
+                    </h3>
+                    <div id="terraform-apply-container">
+                        <div class="line ter-h">terraform apply</div>
+                        <div class="line">Creating AWS subnet...</div>
+                        <div class="line">Subnet created successfully!</div>
+                        <div class="line">State updated in S3 bucket.</div>
+                    </div>
+                </div>
                 <!-- S3 Bucket Column -->
                 <div id="s3-section-apply" class="s3-section flex flex-col items-center justify-center">
                     <h3 class="text-xl font-semibold text-center mb-4 text-gray-800">
@@ -782,90 +784,281 @@
                 </h2>
                 <div id="assignment-instructions"
                     class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                    <h2 class="text-2xl font-bold mb-4">Assignment Instructions</h2>
 
-                    
+                    <!-- Lesson 5 Assignment -->
+                    <section id="lesson-5" class="mb-8">
+                        <h3 class="text-xl font-semibold mb-2">Lesson 5</h3>
+                        <p class="mb-4">
+                            The following tasks should be implemented using Terraform. Ensure that your code is merged
+                            into your GitHub workshop master repository. (Assume that in the class we created the
+                            initial setup.)
+                        </p>
+                        <ol class="list-decimal list-inside">
+                            <li>
+                                <strong>Create a Second Subnet:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Use the provided CIDR block for the second subnet.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Create a Route Table and Associate Subnets:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Create a route table.</li>
+                                    <li>Associate both subnets with the newly created route table.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Configure Route Table for VPC Access:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Ensure the route table allows access within the VPC range (DevOps Workshop VPC).
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Include Existing NAT Gateway in Route Table:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Add a route to the route table that directs outbound traffic (0.0.0.0/0) via the
+                                        existing NAT Gateway (ID: <code>nat-0440e3c0e49d26497</code>).</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Create S3 Bucket Policy:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Create a policy for the S3 bucket to allow only your IAM user to access the
+                                        bucket objects.</li>
+                                    <li>Test the policy by running the <code>terraform init</code> command.</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </section>
+
+                    <!-- Home Assignment - Lesson 6 -->
+                    <section id="home-assignment-lesson-6">
+                        <h3 class="text-xl font-semibold mb-2">Home Assignment - Lesson 6</h3>
+                        <p class="mb-4">
+                            Complete the following tasks to set up an Amazon EKS cluster using Terraform. Ensure that
+                            your configurations are merged into your GitHub workshop master repository.
+                        </p>
+                        <ol class="list-decimal list-inside">
+                            <li>
+                                <strong>Create an EKS Cluster Using Terraform:</strong>
+                                <ol class="list-decimal list-inside ml-5">
+                                    <li>
+                                        <strong>Use the Official EKS Module:</strong>
+                                        <ul class="list-disc list-inside ml-5">
+                                            <li>Utilize the official EKS module version <code>20.24.0</code>.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>Set Cluster Version:</strong>
+                                        <ul class="list-disc list-inside ml-5">
+                                            <li>Configure the EKS cluster version to <code>1.29</code>.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>Name the Cluster:</strong>
+                                        <ul class="list-disc list-inside ml-5">
+                                            <li>Name the cluster as <code>&lt;yourname-cluster&gt;</code>.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>Name the Node Group:</strong>
+                                        <ul class="list-disc list-inside ml-5">
+                                            <li>Name the Node Group as <code>&lt;yourname-nodegroup&gt;</code>.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>Utilize Existing Subnets:</strong>
+                                        <ul class="list-disc list-inside ml-5">
+                                            <li>Ensure the EKS cluster utilizes the subnets created in Lesson 5,
+                                                maintaining the same state file.</li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <strong>Specify Provider Versions:</strong>
+                                        <ul class="list-disc list-inside ml-5">
+                                            <li>Use the provider versions as specified in the workshop slides.</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                            </li>
+                            <li>
+                                <strong>Configure Node Group:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Set the machine type to <code>t2.micro</code>.</li>
+                                    <li>Ensure that only your personal IAM user has access to the EKS cluster.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Deploy and Validate the Cluster:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Once the cluster nodes are up and running, execute the following commands:</li>
+                                    <ul class="list-disc list-inside ml-10">
+                                        <li>
+                                            <code>aws eks --region eu-west-1 update-kubeconfig --name &lt;cluster-name&gt;</code>
+                                        </li>
+                                        <li>
+                                            Run <code>kubectl</code> commands to ensure you receive the expected output,
+                                            such as:
+                                            <ul class="list-disc list-inside ml-10">
+                                                <li><code>kubectl get nodes</code></li>
+                                                <li><code>kubectl get pods --all-namespaces</code></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>Version Control and Submission:</strong>
+                                <ul class="list-disc list-inside ml-5">
+                                    <li>Push your Terraform code to GitHub.</li>
+                                    <li>Merge your feature branch into the master branch.</li>
+                                    <li>Send the repository link for code review.</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </section>
                 </div>
 
-            <!-- High-Level Architecture Diagram -->
-            <div class="diagram-container mb-8">
-                <h2 data-toggle="collapse" data-target="#architecture-diagram"
-                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-                    High-Level Architecture Diagram <span class="transform rotate-180">&#x25BC;</span>
-                </h2>
-                <div id="architecture-diagram"
-                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
-                    <div class="mermaid">
-                        graph TB
-                        subgraph VPC["VPC: DevOps-Workshop"]
-                        direction TB
-                        Subnet1["Subnet 1<br>CIDR: 192.168.24.0/24<br>AZ: eu-west-1a"]
-                        Subnet2["Subnet 2<br>CIDR: 192.168.25.0/24<br>AZ: eu-west-1b"]
-                        RouteTable["Route Table"]
-                        Subnet1 -->|Associated| RouteTable
-                        Subnet2 -->|Associated| RouteTable
-                        end
-                        NATGateway["NAT Gateway<br>devops-workshop-nat"]
-                        RouteTable -->|Route: 0.0.0.0/0<br>via NAT Gateway| NATGateway
-                        Internet["Internet"]
-                        NATGateway --> Internet
-                        S3Bucket["S3 Bucket<br>barm-devops-bucket"]
-                        IAMUser["IAM User<br>${iam_user_name}"]
-                        IAMUser -->|Access via Bucket Policy| S3Bucket
+
+                <!-- High-Level Architecture Diagram -->
+                <div class="diagram-container mb-8">
+                    <h2 data-toggle="collapse" data-target="#architecture-diagram"
+                        class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                        High-Level Architecture Diagram <span class="transform rotate-180">&#x25BC;</span>
+                    </h2>
+                    <div id="architecture-diagram"
+                        class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                        <div class="mermaid">
+                            graph TB
+                            %% Define the VPC
+                            subgraph VPC["VPC: DevOps-Workshop"]
+                            direction TB
+                            Subnet1["Subnet 1<br>CIDR: 192.168.24.0/24<br>AZ: eu-west-1a"]
+                            Subnet2["Subnet 2<br>CIDR: 192.168.25.0/24<br>AZ: eu-west-1b"]
+                            RouteTable["Route Table"]
+                            RouteTable -->|Route: 0.0.0.0/0<br>via NAT Gateway| NATGateway
+                            Subnet1 -->|Associated| RouteTable
+                            Subnet2 -->|Associated| RouteTable
+
+                            %% Define the EKS Cluster
+                            subgraph EKS["Amazon EKS Cluster<br>barm-cluster"]
+                            direction TB
+                            ClusterControlPlane["Control Plane<br>(Managed by AWS)"]
+                            NodeGroup["Managed Node Group<br>barm_nodegroup<br>Instance Type: t2.micro"]
+                            ClusterSecurityGroup["Cluster Security Group"]
+                            ClusterControlPlane -->|Managed by| ClusterSecurityGroup
+                            ClusterControlPlane --> NodeGroup
+                            NodeGroup -->|Deployed in| Subnet1
+                            NodeGroup -->|Deployed in| Subnet2
+                            end
+                            end
+
+                            %% Define External Resources
+                            NATGateway["NAT Gateway<br>devops-workshop-nat"]
+                            Internet["Internet"]
+                            NATGateway --> Internet
+                            S3Bucket["S3 Bucket<br>barm-devops-bucket"]
+                            IAMUser["IAM User<br>barm-user"]
+                            IAMUser -->|Access via Bucket Policy| S3Bucket
+
+                            %% Security and Access
+                            ClusterSecurityGroup -.->|Allows| IAMUser
+                        </div>
                     </div>
 
                 </div>
-            </div>
 
-            <!-- Networking Diagram -->
-            <div class="diagram-container mb-8">
-                <h2 data-toggle="collapse" data-target="#networking-diagram"
-                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-                    Networking Diagram <span class="transform rotate-180">&#x25BC;</span>
-                </h2>
-                <div id="networking-diagram"
-                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
-                    <div class="mermaid">
-                        graph TB
-                        subgraph VPC["VPC: DevOps-Workshop"]
-                        direction TB
-                        Subnet1["Subnet 1<br>192.168.24.0/24<br>eu-west-1a"]
-                        Subnet2["Subnet 2<br>192.168.25.0/24<br>eu-west-1b"]
-                        RouteTable["Route Table"]
-                        Subnet1 --> RouteTable
-                        Subnet2 --> RouteTable
-                        RouteTable -->|0.0.0.0/0| NATGateway
-                        end
-                        NATGateway["NAT Gateway"]
-                        NATGateway --> Internet[("Internet")]
+                <!-- Networking Diagram -->
+                <div class="diagram-container mb-8">
+                    <h2 data-toggle="collapse" data-target="#networking-diagram"
+                        class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                        Networking Diagram <span class="transform rotate-180">&#x25BC;</span>
+                    </h2>
+                    <div id="networking-diagram"
+                        class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                        <div class="mermaid">
+                            graph TB
+                            %% Define the VPC
+                            subgraph VPC["VPC: DevOps-Workshop"]
+                            direction TB
+                            Subnet1["Subnet 1<br>192.168.24.0/24<br>AZ: eu-west-1a"]
+                            Subnet2["Subnet 2<br>192.168.25.0/24<br>AZ: eu-west-1b"]
+                            RouteTable["Route Table"]
+                            NATGateway["NAT Gateway<br>devops-workshop-nat"]
+
+                            %% Associate Subnets with Route Table
+                            Subnet1 -->|Associated| RouteTable
+                            Subnet2 -->|Associated| RouteTable
+
+                            %% Route Table directs outbound traffic to NAT Gateway
+                            RouteTable -->|0.0.0.0/0| NATGateway
+
+                            %% Define EKS Cluster within the VPC
+                            subgraph EKS_Cluster["barm-cluster"]
+
+
+                            direction TB
+                            ControlPlane["Control Plane<br>(Managed by AWS)"]
+                            NodeGroup1["Node Group<br>barm_nodegroup<br>Instance: t2.micro<br>Subnet1"]
+                            NodeGroup2["Node Group<br>barm_nodegroup<br>Instance: t2.micro<br>Subnet2"]
+
+                            %% Connect Control Plane to Node Groups
+                            ControlPlane --> NodeGroup1
+                            ControlPlane --> NodeGroup2
+                            end
+
+                            %% Connect EKS Cluster to Subnets
+                            EKS_Cluster --> Subnet1
+                            EKS_Cluster --> Subnet2
+
+                            end
+
+                            %% External Connections
+                            Internet["Internet"]
+                            NATGateway --> Internet
+
+                            %% Additional Resources
+                            S3Bucket["S3 Bucket<br>barm-devops-bucket"]
+                            IAMUser["IAM User<br>barm-user"]
+
+                            %% IAM User Access to S3 Bucket
+                            IAMUser -->|Access via Bucket Policy| S3Bucket
+
+                            %% Security Groups (Optional)
+                            %% If you want to represent security groups, you can add them here
+                            %% Example:
+                            %% SecurityGroupEKS["EKS Security Group"]
+                            %% ControlPlane --> SecurityGroupEKS
+                        </div>
                     </div>
 
-
                 </div>
-            </div>
 
-            <!-- IAM and S3 Bucket Policy Diagram -->
-            <div class="diagram-container mb-8">
-                <h2 data-toggle="collapse" data-target="#iam-s3-diagram"
-                    class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
-                    IAM and S3 Bucket Policy Diagram <span class="transform rotate-180">&#x25BC;</span>
-                </h2>
-                <div id="iam-s3-diagram"
-                    class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
-                    <div class="mermaid">
-                        graph LR
-                        IAMUser["IAM User<br>${iam_user_name}"]
-                        S3Bucket["S3 Bucket<br>barm-devops-bucket"]
-                        IAMUser -- "s3:ListBucket<br>s3:GetObject<br>s3:PutObject<br>s3:DeleteObject" --> S3Bucket
-                        classDef userStyle fill:#b3d9ff,stroke:#000,stroke-width:1px;
-                        classDef bucketStyle fill:#ffe6b3,stroke:#000,stroke-width:1px;
-                        class IAMUser userStyle;
-                        class S3Bucket bucketStyle;
+                <!-- IAM and S3 Bucket Policy Diagram -->
+                <div class="diagram-container mb-8">
+                    <h2 data-toggle="collapse" data-target="#iam-s3-diagram"
+                        class="collapse-header text-2xl font-semibold text-gray-700 cursor-pointer flex items-center justify-between p-4 bg-gray-100 rounded-md hover:bg-gray-200 transition-all">
+                        IAM and S3 Bucket Policy Diagram <span class="transform rotate-180">&#x25BC;</span>
+                    </h2>
+                    <div id="iam-s3-diagram"
+                        class="collapse show bg-white border border-gray-200 rounded-md p-6 mt-2 shadow-sm">
+                        <div class="mermaid">
+                            graph LR
+                            IAMUser["IAM User<br>${iam_user_name}"]
+                            S3Bucket["S3 Bucket<br>barm-devops-bucket"]
+                            IAMUser -- "s3:ListBucket<br>s3:GetObject<br>s3:PutObject<br>s3:DeleteObject" --> S3Bucket
+                            classDef userStyle fill:#b3d9ff,stroke:#000,stroke-width:1px;
+                            classDef bucketStyle fill:#ffe6b3,stroke:#000,stroke-width:1px;
+                            class IAMUser userStyle;
+                            class S3Bucket bucketStyle;
+                        </div>
+
+
                     </div>
-
-
                 </div>
             </div>
-        </div>
     </section>
 
     <style>

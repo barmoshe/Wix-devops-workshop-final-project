@@ -51,7 +51,15 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   policy = data.aws_iam_policy_document.bucket_policy.json
 }
 
+resource "aws_eks_access_policy_association" "barm_user_access" {
+  cluster_name  = var.cluster_name
+  principal_arn = data.aws_iam_user.current_user.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
+  access_scope {
+    type = "cluster"
+  }
+}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -77,5 +85,10 @@ module "eks" {
     }
   }
 
+  access_entries = {
+    barm_user = {
+      principal_arn = data.aws_iam_user.current_user.arn # Use 'barm-user'
+    }
+  }
 }
 

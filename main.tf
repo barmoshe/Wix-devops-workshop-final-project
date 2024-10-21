@@ -88,6 +88,9 @@ module "eks" {
       cidr_blocks = [aws_subnet.barm-terraform-subnet-1.cidr_block, aws_subnet.barm-terraform-subnet-2.cidr_block]
     }
   }
+  eks_managed_node_group_defaults = {
+    instance_types = ["t2.micro"]
+  }
   eks_managed_node_groups = {
     barm_nodegroup = {
       desired_capacity = 2

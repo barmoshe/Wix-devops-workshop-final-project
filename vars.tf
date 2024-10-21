@@ -33,12 +33,12 @@ variable "cidr_2" {
   type    = string
   default = "192.168.25.0/24"
 }
-
-variable "iam_user_name" {
-  type        = string
-  description = "The name of the IAM user to grant access to the S3 bucket."
-  default     = "barm-user"
+variable "iam_user_names" {
+  type        = list(string)
+  description = "The names of the IAM users to grant access to the S3 bucket and EKS cluster."
+  default     = ["barm-user", "shaiga", "yehiamc", "esterh"]
 }
+
 
 variable "cluster_version" {
   type    = string

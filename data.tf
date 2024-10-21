@@ -12,8 +12,9 @@ data "aws_nat_gateway" "selected" {
   }
   state = "available"
 }
-data "aws_iam_user" "current_user" {
-  user_name = var.iam_user_name
+data "aws_iam_user" "current_users" {
+  for_each  = toset(var.iam_user_names)
+  user_name = each.value
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
@@ -23,7 +24,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
     principals {
       type        = "AWS"
-      identifiers = [data.aws_iam_user.current_user.arn]
+      identifiers = [for user in data.aws_iam_user.current_users : user.arn]
     }
 
     actions = [

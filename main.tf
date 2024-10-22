@@ -93,10 +93,10 @@ module "eks" {
   }
   eks_managed_node_groups = {
     barm_nodegroup = {
-      desired_capacity = 2
-      min_capacity     = 1
-      max_capacity     = 3
-      instance_type    = "t2.micro"
+      desired_size   = 2
+      min_size       = 1
+      max_size       = 3
+      instance_types = ["t2.micro"]
     }
   }
 

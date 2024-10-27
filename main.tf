@@ -68,6 +68,21 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "20.24.0"
 
+
+  cluster_addons = {
+    aws-ebs-csi-driver = {
+      addon_version = "v1.35.0-eksbuild.1"
+
+    }
+    coredns = {
+      addon_version = "v1.11.3-eksbuild.1"
+    }
+    # vpc-cni = {
+    #   addon_version = "v1.18.5-eksbuild.1"
+    # }
+  }
+
+
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
@@ -89,14 +104,15 @@ module "eks" {
     }
   }
   eks_managed_node_group_defaults = {
-    instance_types = ["t2.micro"]
+    instance_types = [" t2.small "]
   }
+
   eks_managed_node_groups = {
     barm_nodegroup = {
       desired_size   = 2
       min_size       = 1
       max_size       = 3
-      instance_types = ["t2.micro"]
+      instance_types = ["t2.small"]
     }
   }
 
@@ -106,5 +122,3 @@ module "eks" {
     }
   }
 }
-
-

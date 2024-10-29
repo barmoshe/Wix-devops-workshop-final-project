@@ -122,3 +122,8 @@ module "eks" {
     }
   }
 }
+resource "aws_iam_policy" "aws_lb_controller_policy" {
+  name        = "AWSLoadBalancerControllerPolicy"
+  description = "IAM policy for AWS Load Balancer Controller"
+  policy      = file("iam_policy.json") # Ensure you have the policy JSON file
+}

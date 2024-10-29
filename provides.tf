@@ -11,10 +11,6 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = "~>1.14"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = ">= 2.0.0"
-    }
   }
 }
 
@@ -31,3 +27,9 @@ provider "kubectl" {
     command     = "aws"
   }
 }
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+

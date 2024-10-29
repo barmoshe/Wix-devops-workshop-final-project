@@ -127,3 +127,24 @@ resource "aws_iam_policy" "aws_lb_controller_policy" {
   description = "IAM policy for AWS Load Balancer Controller"
   policy      = file("iam_policy.json") # Ensure you have the policy JSON file
 }
+resource "aws_iam_role" "aws_lb_controller_role" {
+  name = "AWSLoadBalancerControllerRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_lb_controller_policy" {
+  role       = aws_iam_role.aws_lb_controller_role.name
+  policy_arn = aws_iam_policy.aws_lb_controller_policy.arn
+}

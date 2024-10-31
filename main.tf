@@ -32,17 +32,20 @@ resource "aws_route" "nat_gateway_route" {
   route_table_id         = aws_route_table.route_table.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = data.aws_nat_gateway.selected.id
+
 }
 
 # Associate the two subnets with the route table
 resource "aws_route_table_association" "subnet1_association" {
   subnet_id      = aws_subnet.barm-terraform-subnet-1.id
   route_table_id = aws_route_table.route_table.id
+
 }
 
 resource "aws_route_table_association" "subnet2_association" {
   subnet_id      = aws_subnet.barm-terraform-subnet-2.id
   route_table_id = aws_route_table.route_table.id
+
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
@@ -61,6 +64,8 @@ resource "aws_eks_access_policy_association" "user_access" {
   access_scope {
     type = "cluster"
   }
+  depends_on = [module.eks]
+
 }
 
 
@@ -121,4 +126,79 @@ module "eks" {
       principal_arn = data.aws_iam_user.current_users[user_name].arn
     }
   }
+  tags = {
+    Environment = "barm-devops"
+    Name        = "barm-devops-cluster"
+  }
 }
+# #Create the NGINX Deployment
+# resource "kubernetes_deployment_v1" "nginx_deployment" {
+#   metadata {
+#     name = "nginx-deployment"
+#     labels = {
+#       app = "nginx"
+#     }
+#   }
+#   spec {
+#     replicas = 2
+#     selector {
+#       match_labels = {
+#         app = "nginx"
+#       }
+#     }
+#     template {
+#       metadata {
+#         labels = {
+#           app = "nginx"
+#         }
+#       }
+#       spec {
+#         container {
+#           name  = "nginx"
+#           image = "nginx:1.21.6"
+#           port {
+#             container_port = 80
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
+
+# #Create the Service with ACM certificate
+# resource "kubernetes_service" "nginx_service" {
+#   metadata {
+#     name = "nginx-service"
+#     annotations = {
+#       "service.beta.kubernetes.io/aws-load-balancer-ssl-cert"         = "arn:aws:acm:eu-west-1:730335218716:certificate/8f4eeeea-9a1d-443c-a8c8-4de7f8b19aec"
+#       "service.beta.kubernetes.io/aws-load-balancer-backend-protocol" = "http"
+#       "service.beta.kubernetes.io/aws-load-balancer-ssl-ports"        = "443"
+#       "service.beta.kubernetes.io/aws-load-balancer-type"             = "alb"
+#     }
+#   }
+
+#   spec {
+#     type = "LoadBalancer"
+#     selector = {
+#       app = "nginx"
+#     }
+#     port {
+#       port        = 443
+#       target_port = 80
+#       protocol    = "TCP"
+#     }
+#   }
+# }
+
+
+# # Route 53 DNS Record for barm.wix-devops-workshop.com
+# resource "aws_route53_record" "nginx_dns" {
+#   zone_id = var.hosted_zone_id
+#   name    = "barm.wix-devops-workshop.com"
+#   type    = "CNAME"
+
+#   records = [kubernetes_service.nginx_service.status[0].load_balancer[0].ingress[0].hostname]
+#   ttl     = 60
+
+#   depends_on = [kubernetes_service.nginx_service]
+# }

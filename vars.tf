@@ -48,3 +48,8 @@ variable "cluster_name" {
   type    = string
   default = "barm-cluster"
 }
+variable "hosted_zone_id" {
+  type        = string
+  description = "Route 53 Hosted Zone ID for wix-devops-workshop.com"
+  default     = "Z00269823B8KU0UBQVXPI"
+}

@@ -32,17 +32,20 @@ resource "aws_route" "nat_gateway_route" {
   route_table_id         = aws_route_table.route_table.id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = data.aws_nat_gateway.selected.id
+
 }
 
 # Associate the two subnets with the route table
 resource "aws_route_table_association" "subnet1_association" {
   subnet_id      = aws_subnet.barm-terraform-subnet-1.id
   route_table_id = aws_route_table.route_table.id
+
 }
 
 resource "aws_route_table_association" "subnet2_association" {
   subnet_id      = aws_subnet.barm-terraform-subnet-2.id
   route_table_id = aws_route_table.route_table.id
+
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
@@ -61,6 +64,8 @@ resource "aws_eks_access_policy_association" "user_access" {
   access_scope {
     type = "cluster"
   }
+  depends_on = [module.eks]
+
 }
 
 
@@ -121,4 +126,9 @@ module "eks" {
       principal_arn = data.aws_iam_user.current_users[user_name].arn
     }
   }
+  tags = {
+    Environment = "barm-devops"
+    Name        = "barm-devops-cluster"
+  }
 }
+

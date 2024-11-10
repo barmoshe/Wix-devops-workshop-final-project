@@ -25,4 +25,4 @@ spec:
         - name: NODE_ENV
           value: production
         - name: DB_URL
-          value: mongodb+srv://isralifymongo:isralifymongo@israelify-cluster.imdpclp.mongodb.net/?retryWrites=true&w=majority&appName=israelify-cluster&authSource=admin
+          value: your_db_url

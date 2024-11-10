@@ -11,6 +11,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = "~>1.14"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~>2.9.0"
+    }
   }
 }
 
@@ -27,3 +31,19 @@ provider "kubectl" {
     command     = "aws"
   }
 }
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "--region", var.region, "get-token", "--cluster-name", var.cluster_name]
+    command     = "aws"
+  }
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config" 
+  }
+}
+

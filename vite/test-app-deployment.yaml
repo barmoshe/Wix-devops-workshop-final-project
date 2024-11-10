@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vite-react-deployment
+  namespace: spotify
+  labels:
+    app: vite-react
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vite-react
+  template:
+    metadata:
+      labels:
+        app: vite-react
+    spec:
+      containers:
+      - name: vite-react-app
+        image: barmoshe/my-vite-react-app:production
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80  # NGINX runs on port 80

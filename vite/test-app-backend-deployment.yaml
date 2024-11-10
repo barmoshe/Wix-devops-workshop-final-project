@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: spotify
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: barmoshe/spotify-backend:production
+        imagePullPolicy: Always
+        ports:
+        - containerPort:  3000
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: DB_URL
+          value: mongodb+srv://isralifymongo:isralifymongo@israelify-cluster.imdpclp.mongodb.net/?retryWrites=true&w=majority&appName=israelify-cluster&authSource=admin

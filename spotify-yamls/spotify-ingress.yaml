@@ -1,0 +1,33 @@
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: spotify-ingress
+#   namespace: spotify
+#   annotations:
+#     alb.ingress.kubernetes.io/scheme: internet-facing
+#     alb.ingress.kubernetes.io/ssl-cert: arn:aws:acm:eu-west-1:730335218716:certificate/8f4eeeea-9a1d-443c-a8c8-4de7f8b19aec
+#     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+#     alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+
+# spec:
+#   ingressClassName: alb  # Specifies the AWS ALB Ingress Controller
+#   rules:
+#     - host: barm.wix-devops-workshop.com  # Replace with your domain
+#       http:
+#         paths:
+#           # Redirect all /api requests to backend service
+#           - path: /api/
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: backend-service
+#                 port:
+#                   number: 80
+#           # Forward all other requests to vite-react service
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: vite-react-service
+#                 port:
+#                   number: 80

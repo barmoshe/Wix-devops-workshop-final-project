@@ -112,7 +112,7 @@ module "eks" {
   eks_managed_node_group_defaults = {
     instance_types = [" t2.small "]
   }
-
+  enable_irsa = true  
   eks_managed_node_groups = {
     barm_nodegroup = {
       desired_size   = 2

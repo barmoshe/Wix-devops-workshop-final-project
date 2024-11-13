@@ -291,6 +291,12 @@ graph TD
 
 ### Future Architecture
 
+The next step is to add an Nginx Ingress Controller within the cluster to improve traffic routing. This approach will allow routing rules based on path:
+
+- Requests to the root path (`/`) will go to the frontend service.
+- Requests to `/api` will be directed to the backend service.
+
+This setup removes the need for the Nginx reverse proxy currently in the frontend pods, making the routing simpler and more direct. The AWS Network Load Balancer (NLB) will handle external traffic, directing it to the Ingress Controller, which will then route requests to the appropriate service within the cluster.
 ```mermaid
 graph TD
     subgraph Client

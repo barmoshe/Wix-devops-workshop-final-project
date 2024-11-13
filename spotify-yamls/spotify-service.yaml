@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vite-react-service
+  namespace: spotify
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # Specify NLB
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"  # Make it public
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:730335218716:certificate/8f4eeeea-9a1d-443c-a8c8-4de7f8b19aec"
+    service.beta.kubernetes.io/aws-load-balancer-listener-ports: "443"  # Listener on port 443
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"  # NLB operates at Layer 4
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+
+  labels:
+    app: vite-react
+spec:
+  selector:
+    app: vite-react
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 80  # Forward traffic to port 80 on the pods
+  type: LoadBalancer

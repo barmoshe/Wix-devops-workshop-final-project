@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: spotify
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: barmoshe/spotify-backend:production
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-url-secret
+              key: DB_URL
+        - name: OPEN_AI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: open-ai-api-key
+              key: OPEN_AI_API_KEY
+      

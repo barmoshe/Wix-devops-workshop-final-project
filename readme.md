@@ -1,0 +1,338 @@
+# Wix DevOps Workshop Final Project
+
+## Overview
+
+This project sets up an AWS EKS cluster to run a full-stack Spotify clone application. The repository includes:
+
+- **Terraform configurations** for provisioning the EKS infrastructure (located in the `terraform` directory with its own README).
+- **Kubernetes manifests** for deploying the backend and frontend services.
+- **AWS Load Balancer Controller** installed within the cluster.
+- **Nginx configuration** to proxy frontend requests to the backend service.
+
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Setup Instructions](#setup-instructions)
+  - [1. Infrastructure Setup with Terraform](#1-infrastructure-setup-with-terraform)
+  - [2. Install AWS Load Balancer Controller](#2-install-aws-load-balancer-controller)
+  - [3. Create Namespace](#3-create-namespace)
+  - [4. Create Secrets](#4-create-secrets)
+  - [5. Deploy the Backend Service](#5-deploy-the-backend-service)
+  - [6. Deploy the Frontend Service](#6-deploy-the-frontend-service)
+  - [7. Access the Application](#7-access-the-application)
+- [Nginx Configuration](#nginx-configuration)
+- [Environment Variables and Secrets](#environment-variables-and-secrets)
+- [Notes](#notes)
+- [Architecture Diagrams](#architecture-diagrams)
+  - [Current Architecture](#current-architecture)
+  - [Future Architecture](#future-architecture)
+- [Contact](#contact)
+
+## Architecture
+
+The application consists of a React frontend and a Node.js backend, both deployed on AWS EKS and exposed via a Network Load Balancer (NLB). Nginx is used in the frontend container to proxy API requests to the backend service.
+
+## Prerequisites
+
+- **AWS Account** with permissions to create EKS clusters and related resources.
+- **Terraform** installed on your local machine.
+- **kubectl** configured to interact with your EKS cluster.
+- **AWS Load Balancer Controller** installed in the cluster.
+- **AWS IAM permissions** for necessary services.
+- **AWS ACM Certificate ARN** for SSL termination.
+
+## Setup Instructions
+
+### 1. Infrastructure Setup with Terraform
+
+Navigate to the `terraform` directory and follow the instructions in its README to set up the AWS EKS cluster.
+
+link to folder : https://github.com/barmoshe/Wix-devops-workshop-final-project/tree/deploy-fullstack-to-kuberntes/terraform
+
+```bash
+cd terraform
+# Follow the instructions in terraform/README.md
+```
+
+### 2. Install AWS Load Balancer Controller
+
+Ensure that the AWS Load Balancer Controller is installed in your EKS cluster. You can follow the [official AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html) for installation steps.
+
+### 3. Create Namespace
+
+Create the `spotify` namespace where all the resources will be deployed:
+
+```bash
+kubectl create namespace spotify
+```
+
+### 4. Create Secrets
+
+Before deploying the backend, create the necessary secrets in the `spotify` namespace:
+
+```bash
+kubectl create secret generic db-url-secret -n spotify --from-literal=DB_URL='your_database_url'
+kubectl create secret generic open-ai-api-key -n spotify --from-literal=OPEN_AI_API_KEY='your_openai_api_key'
+```
+
+### 5. Deploy the Backend Service
+
+Apply the Kubernetes manifests for the backend deployment and service:
+
+```bash
+kubectl apply -f spotify-yamls/backend-deployment.yaml
+kubectl apply -f spotify-yamls/backend-service.yaml
+```
+
+#### `backend-deployment.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: spotify
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: barmoshe/spotify-backend:production
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-url-secret
+                  key: DB_URL
+            - name: OPEN_AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: open-ai-api-key
+                  key: OPEN_AI_API_KEY
+```
+
+#### `backend-service.yaml`
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: spotify
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+```
+
+### 6. Deploy the Frontend Service
+
+Apply the Kubernetes manifests for the frontend deployment and service:
+
+```bash
+kubectl apply -f spotify-yamls/frontend-deployment.yaml
+kubectl apply -f spotify-yamls/frontend-service.yaml
+```
+
+#### `frontend-deployment.yaml`
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vite-react-deployment
+  namespace: spotify
+  labels:
+    app: vite-react
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vite-react
+  template:
+    metadata:
+      labels:
+        app: vite-react
+    spec:
+      containers:
+        - name: vite-react-app
+          image: barmoshe/my-vite-react-app:production
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80 # Nginx runs on port 80
+```
+
+#### `frontend-service.yaml`
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: vite-react-service
+  namespace: spotify
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Specify NLB
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing" # Make it public
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "your_acm_certificate_arn"
+    service.beta.kubernetes.io/aws-load-balancer-listener-ports: "443" # Listener on port 443
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp" # NLB operates at Layer 4
+  labels:
+    app: vite-react
+spec:
+  selector:
+    app: vite-react
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 80 # Forward traffic to port 80 on the pods
+  type: LoadBalancer
+```
+
+> **Note:** Replace `"your_acm_certificate_arn"` in `frontend-service.yaml` with your own AWS ACM Certificate ARN.
+
+### 7. Access the Application
+
+Retrieve the DNS name of the Load Balancer:
+
+```bash
+kubectl get svc -n spotify
+```
+
+Look for the `EXTERNAL-IP` associated with `vite-react-service`. Open this address in your browser to access the Spotify clone application.
+
+## Nginx Configuration
+
+The frontend application uses Nginx to proxy API requests to the backend service. The Nginx configuration is as follows:
+
+```nginx
+location /api {
+    proxy_pass http://backend-service;
+}
+```
+
+This configuration ensures that any requests to `/api` on the frontend are forwarded to the backend service.
+
+> **Note:** This is a temporary workaround for routing before installing an Ingress Controller to handle the routing.
+
+## Environment Variables and Secrets
+
+The backend deployment uses the following environment variables:
+
+- `NODE_ENV`: Set to `production`.
+- `DB_URL`: Database connection string, retrieved from a Kubernetes secret named `db-url-secret`.
+- `OPEN_AI_API_KEY`: API key for OpenAI, retrieved from a Kubernetes secret named `open-ai-api-key`.
+
+As shown in [Step 4](#4-create-secrets), make sure to create the necessary secrets before deploying the backend.
+
+## Notes
+
+- The services are configured to use an AWS Network Load Balancer (NLB) and are internet-facing.
+- SSL termination is handled by specifying an AWS ACM certificate ARN in the service annotations. Update the ARN in `frontend-service.yaml` with your own certificate ARN.
+- Ensure that the `spotify` namespace exists in your cluster.
+
+## Architecture Diagrams
+<div align="center">
+
+### Current Architecture
+
+```mermaid
+graph TD
+    subgraph Client
+        User
+    end
+
+    subgraph AWS
+        NLB["AWS NLB"]
+    end
+
+    subgraph Frontend
+        FrontendService["Frontend Service<br>(vite-react-service)"]
+        FrontendPods["Frontend Pods<br>(Nginx + React)"]
+    end
+
+    subgraph Backend
+        BackendService["Backend Service<br>(backend-service)"]
+        BackendPods["Backend Pods<br>(Node.js)"]
+    end
+
+    subgraph External_Services
+        Database[(Database)]
+        OpenAI_API[(OpenAI API)]
+    end
+
+    User --> NLB
+    NLB --> FrontendService
+    FrontendService --> FrontendPods
+    FrontendPods -->|Serve React App| User
+    FrontendPods -- Proxies --> BackendService
+    BackendService --> BackendPods
+    BackendPods -->|Database Connection| Database
+    BackendPods -->|API Requests| OpenAI_API
+```
+
+### Future Architecture
+
+```mermaid
+graph TD
+    subgraph Client
+        User
+    end
+
+    subgraph AWS
+        NLB["AWS Network Load Balancer"]
+    end
+
+    subgraph Ingress
+        IngressController["Nginx Ingress Controller"]
+    end
+
+    subgraph Frontend
+        FrontendService["Frontend Service<br>(vite-react-service)"]
+        FrontendPods["Frontend Pods<br>(Nginx + React)"]
+    end
+
+    subgraph Backend
+        BackendService["Backend Service<br>(backend-service)"]
+        BackendPods["Backend Pods<br>(Node.js)"]
+    end
+
+    subgraph External_Services
+        Database["Database"]
+        OpenAI_API["OpenAI API"]
+    end
+
+    User --> NLB
+    NLB --> IngressController
+    IngressController -->|"Path: /"| FrontendService
+    IngressController -->|"Path: /api"| BackendService
+    FrontendService --> FrontendPods
+    BackendService --> BackendPods
+    FrontendPods -->|"Serve React App"| User
+    BackendPods -->|"API Responses"| IngressController
+    BackendPods -->|"Database Connection"| Database
+    BackendPods -->|"External API Calls"| OpenAI_API
+```
+</div>
+
+## Contact
+
+For any questions or issues, please open an issue on the [GitHub repository](https://github.com/barmoshe/Wix-devops-workshop-final-project).

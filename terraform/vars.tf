@@ -33,6 +33,11 @@ variable "cidr_2" {
   type    = string
   default = "192.168.25.0/24"
 }
+variable "public-subnet-id" {
+  type   = string 
+  default = "subnet-02b03655a76056bcd"
+}
+  
 variable "iam_user_names" {
   type        = list(string)
   description = "The names of the IAM users to grant access to the S3 bucket and EKS cluster."

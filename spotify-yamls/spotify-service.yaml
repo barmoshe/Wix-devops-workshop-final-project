@@ -9,6 +9,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:730335218716:certificate/8f4eeeea-9a1d-443c-a8c8-4de7f8b19aec"
     service.beta.kubernetes.io/aws-load-balancer-listener-ports: "443"  # Listener on port 443
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"  # NLB operates at Layer 4
+    # service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip # Use IP target type(pod IP) for NLB
   labels:
     app: vite-react
 spec:

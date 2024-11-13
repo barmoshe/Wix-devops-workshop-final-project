@@ -27,7 +27,6 @@ This project sets up an AWS EKS cluster to run a full-stack Spotify clone applic
 - [Architecture Diagrams](#architecture-diagrams)
   - [Current Architecture](#current-architecture)
   - [Future Architecture](#future-architecture)
-- [Contact](#contact)
 
 ## Architecture
 
@@ -340,7 +339,3 @@ graph TD
     BackendPods -->|"External API Calls"| OpenAI_API
 ```
 </div>
-
-## Contact
-
-For any questions or issues, please open an issue on the [GitHub repository](https://github.com/barmoshe/Wix-devops-workshop-final-project).

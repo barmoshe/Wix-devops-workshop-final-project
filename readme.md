@@ -229,7 +229,15 @@ location /api {
 ```
 
 This configuration ensures that any requests to `/api` on the frontend are forwarded to the backend service.
+links to docker files and nginx configuration :
 
+- [frontend-docker-file
+](https://github.com/Gal-Or/IsraelifyApp/blob/deploy-to-kubernetes/Dockerfile)
+
+- [nginx-config
+](https://github.com/Gal-Or/IsraelifyApp/blob/deploy-to-kubernetes/nginx.conf)
+- [backend-docker-file
+](https://github.com/barmoshe/Israelify-backend/blob/deploy-to-kubernetes/Dockerfile)
 > **Note:** This is a temporary workaround for routing before installing an Ingress Controller to handle the routing.
 
 ## Environment Variables and Secrets

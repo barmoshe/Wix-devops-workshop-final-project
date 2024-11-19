@@ -56,7 +56,7 @@ cd terraform
 
 ### 2. Install AWS Load Balancer Controller
 
-Ensure that the AWS Load Balancer Controller is installed in your EKS cluster. You can follow the [official AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html) for installation steps.
+Ensure that the AWS Load Balancer Controller is installed in your EKS cluster. [here](https://github.com/barmoshe/Wix-devops-workshop-final-project/blob/main/terraform/aws-lbc.tf) is the terraform code for it.
 
 ### 3. Create Namespace
 

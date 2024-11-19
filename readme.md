@@ -187,7 +187,7 @@ graph TD
     NLB --> FrontendService
     FrontendService --> FrontendPods
     FrontendPods -->|Serve React App| User
-    FrontendPods -- Proxies --> BackendService
+    FrontendPods -- Proxies(/api) --> BackendService
     BackendService --> BackendPods
     BackendPods -->|Database Connection| Database
     BackendPods -->|API Requests| OpenAI_API

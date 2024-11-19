@@ -4,21 +4,24 @@ metadata:
   name: vite-react-service
   namespace: spotify
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # Specify NLB
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"  # Make it public
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:730335218716:certificate/8f4eeeea-9a1d-443c-a8c8-4de7f8b19aec"
-    service.beta.kubernetes.io/aws-load-balancer-listener-ports: "443"  # Listener on port 443
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"  # NLB operates at Layer 4
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # Specify Network Load Balancer
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"  # Choose between internet-facing or internal
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:730335218716:certificate/8f4eeeea-9a1d-443c-a8c8-4de7f8b19aec"  # ACM Certificate ARN
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"  # Define the SSL ports
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"  # Backend protocol
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-
   labels:
     app: vite-react
 spec:
   selector:
     app: vite-react
   ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
     - name: https
       protocol: TCP
       port: 443
-      targetPort: 80  # Forward traffic to port 80 on the pods
+      targetPort: 80  # Traffic will be forwarded to port 80 on your pods
   type: LoadBalancer

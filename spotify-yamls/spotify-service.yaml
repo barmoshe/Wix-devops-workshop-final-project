@@ -25,3 +25,8 @@ spec:
       port: 443
       targetPort: 80  # Traffic will be forwarded to port 80 on your pods
   type: LoadBalancer
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # Optional: Timeout in seconds
+

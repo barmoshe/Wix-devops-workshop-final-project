@@ -84,63 +84,11 @@ kubectl apply -f spotify-yamls/backend-deployment.yaml
 kubectl apply -f spotify-yamls/backend-service.yaml
 ```
 
-#### `backend-deployment.yaml`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [`backend-deployment.yaml`](https://github.com/barmoshe/Wix-devops-workshop-final-project/blob/main/spotify-yamls/spotify-backend-deployment.yaml)
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: backend-deployment
-  namespace: spotify
-  labels:
-    app: backend
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: backend
-  template:
-    metadata:
-      labels:
-        app: backend
-    spec:
-      containers:
-        - name: backend
-          image: barmoshe/spotify-backend:production
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 3000
-          env:
-            - name: NODE_ENV
-              value: production
-            - name: DB_URL
-              valueFrom:
-                secretKeyRef:
-                  name: db-url-secret
-                  key: DB_URL
-            - name: OPEN_AI_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: open-ai-api-key
-                  key: OPEN_AI_API_KEY
-```
 
-#### `backend-service.yaml`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  [`backend-service.yaml`](https://github.com/barmoshe/Wix-devops-workshop-final-project/blob/main/spotify-yamls/spotify-backend-service.yaml)
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend-service
-  namespace: spotify
-spec:
-  selector:
-    app: backend
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3000
-```
 
 ### 6. Deploy the Frontend Service
 
@@ -151,60 +99,9 @@ kubectl apply -f spotify-yamls/frontend-deployment.yaml
 kubectl apply -f spotify-yamls/frontend-service.yaml
 ```
 
-#### `frontend-deployment.yaml`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`frontend-deployment.yaml`](https://github.com/barmoshe/Wix-devops-workshop-final-project/blob/main/spotify-yamls/spotify-deployment.yaml)
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: vite-react-deployment
-  namespace: spotify
-  labels:
-    app: vite-react
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: vite-react
-  template:
-    metadata:
-      labels:
-        app: vite-react
-    spec:
-      containers:
-        - name: vite-react-app
-          image: barmoshe/my-vite-react-app:production
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80 # Nginx runs on port 80
-```
-
-#### `frontend-service.yaml`
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: vite-react-service
-  namespace: spotify
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Specify NLB
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing" # Make it public
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "your_acm_certificate_arn"
-    service.beta.kubernetes.io/aws-load-balancer-listener-ports: "443" # Listener on port 443
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp" # NLB operates at Layer 4
-  labels:
-    app: vite-react
-spec:
-  selector:
-    app: vite-react
-  ports:
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 80 # Forward traffic to port 80 on the pods
-  type: LoadBalancer
-```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [`frontend-service.yaml`](https://github.com/barmoshe/Wix-devops-workshop-final-project/blob/main/spotify-yamls/spotify-service.yaml)
 
 > **Note:** Replace `"your_acm_certificate_arn"` in `frontend-service.yaml` with your own AWS ACM Certificate ARN.
 

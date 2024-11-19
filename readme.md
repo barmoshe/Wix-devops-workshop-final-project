@@ -231,7 +231,7 @@ graph TD
 
     subgraph External_Services
         Database["Database"]
-        OpenAI_API["OpenAI API"]
+        External_APIs["External_APIs"]
     end
 
     User --> NLB
@@ -243,6 +243,6 @@ graph TD
     FrontendPods -->|"Serve React App"| User
     BackendPods -->|"API Responses"| IngressController
     BackendPods -->|"Database Connection"| Database
-    BackendPods -->|"External API Calls"| OpenAI_API
+    BackendPods -->|"External API Calls"| External_APIs
 ```
 </div>

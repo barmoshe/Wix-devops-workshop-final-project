@@ -180,7 +180,7 @@ graph TD
 
     subgraph External_Services
         Database[(Database)]
-        OpenAI_API[(OpenAI API)]
+      External_APIs[(External_APIs)]
     end
 
     User --> NLB
@@ -190,7 +190,7 @@ graph TD
     FrontendPods -- Proxies(/api) --> BackendService
     BackendService --> BackendPods
     BackendPods -->|Database Connection| Database
-    BackendPods -->|API Requests| OpenAI_API
+    BackendPods -->|API Requests| External_APIs
 ```
 </div>
 ### Future Architecture

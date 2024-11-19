@@ -192,7 +192,7 @@ graph TD
     BackendPods -->|Database Connection| Database
     BackendPods -->|API Requests| OpenAI_API
 ```
-
+</div>
 ### Future Architecture
 
 The next step is to add an Nginx Ingress Controller within the cluster to improve traffic routing. Currently, the frontend Nginx image includes a reverse proxy configuration to route `/api` requests to the backend service. While functional, this approach is not ideal, as it adds extra complexity within the frontend image itself.
@@ -203,6 +203,8 @@ With an Ingress Controller, routing can be managed directly in the cluster, allo
 - Requests to `/api` will be routed to the backend service.
 
 This setup will eliminate the need for custom Nginx configurations in the frontend image. The AWS Network Load Balancer (NLB) will direct external traffic to the Ingress Controller, which will handle routing to the appropriate services within the cluster.
+<div align="center">
+
 ```mermaid
 graph TD
     subgraph Client

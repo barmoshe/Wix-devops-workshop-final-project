@@ -160,6 +160,7 @@ As shown in [Step 4](#4-create-secrets), make sure to create the necessary secre
 ![diagram1](https://github.com/user-attachments/assets/63896fbe-ee25-4338-b7fe-e0f7bd21a9ff)
 
 </div>
+
 ### Future Architecture
 
 The next step is to add an Nginx Ingress Controller within the cluster to improve traffic routing. Currently, the frontend Nginx image includes a reverse proxy configuration to route `/api` requests to the backend service. While functional, this approach is not ideal, as it adds extra complexity within the frontend image itself.

@@ -157,41 +157,8 @@ As shown in [Step 4](#4-create-secrets), make sure to create the necessary secre
 <div align="center">
 
 ### Current Architecture
+![diagram1](https://github.com/user-attachments/assets/63896fbe-ee25-4338-b7fe-e0f7bd21a9ff)
 
-```mermaid
-graph TD
-    subgraph Client
-        User
-    end
-
-    subgraph AWS
-        NLB["AWS NLB"]
-    end
-
-    subgraph Frontend
-        FrontendService["Frontend Service<br>(vite-react-service)"]
-        FrontendPods["Frontend Pods<br>(Nginx + React)"]
-    end
-
-    subgraph Backend
-        BackendService["Backend Service<br>(backend-service)"]
-        BackendPods["Backend Pods<br>(Node.js)"]
-    end
-
-    subgraph External_Services
-        Database[(Database)]
-      External_APIs[(External_APIs)]
-    end
-
-    User --> NLB
-    NLB --> FrontendService
-    FrontendService --> FrontendPods
-    FrontendPods -->|Serve React App| User
-    FrontendPods -- Proxies(/api) --> BackendService
-    BackendService --> BackendPods
-    BackendPods -->|Database Connection| Database
-    BackendPods -->|API Requests| External_APIs
-```
 </div>
 ### Future Architecture
 
@@ -217,17 +184,18 @@ graph TD
 
     subgraph Ingress
         IngressController["Nginx Ingress Controller"]
-    end
 
     subgraph Frontend
         FrontendService["Frontend Service<br>(vite-react-service)"]
-        FrontendPods["Frontend Pods<br>(Nginx + React)"]
+        FrontendPods["Frontend Pods<br>Nginx:<br/> serves React app <br/> proxy (/api) requests"]
     end
 
     subgraph Backend
         BackendService["Backend Service<br>(backend-service)"]
         BackendPods["Backend Pods<br>(Node.js)"]
     end
+    end
+
 
     subgraph External_Services
         Database["Database"]

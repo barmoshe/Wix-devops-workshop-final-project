@@ -153,7 +153,7 @@
         }
 
         .diagram {
-            width: 200px;
+            width: 420px;
             /* Make diagram images small on the slides */
             height: auto;
         }
@@ -345,7 +345,7 @@
                     <!-- Placeholder for relevant icon or image -->
                     <img src="https://assets.dryicons.com/uploads/icon/svg/9859/6aaff49e-741b-49c8-8770-feb16320f009.svg"
                         alt="Introduction Icon"
-                        style="width: 250px; height: auto; filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(700%) hue-rotate(17deg);">
+                        style="width: 350px; height: auto; filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(700%) hue-rotate(17deg);">
                 </div>
             </div>
         </div>
@@ -380,7 +380,8 @@
                     <ul>
                         <li>Defined Infrastructure as Code (IaC) with Terraform scripts.</li>
                         <li>Provisioned resources such as VPCs, subnets, security groups.</li>
-                        <li>Enabled consistent and repeatable deployments.</li>
+                        <li>Managed state in s3 bucket.</li>
+                        <li>configured EKS cluster and used helm charts with terraform.</li>
                     </ul>
                 </div>
                 <div class="column" style="text-align: center;">
@@ -398,9 +399,9 @@
                 <div class="column">
                     <p>Set up a scalable and highly available Kubernetes cluster using Amazon EKS.</p>
                     <ul>
-                        <li>Configured node groups and auto-scaling policies.</li>
-                        <li>Integrated with AWS networking and security services.</li>
-                        <li>Used Helm charts.</li>
+                        <li>Configured node groups and aws loadbalancer.</li>
+                        <li>Integrated with AWS load balancer controller.</li>
+                        <li>Used Helm charts to install things like lb controller</li>
                         <li>Managed deployments via <code>kubectl</code>.</li>
                     </ul>
                 </div>
@@ -412,29 +413,13 @@
             </div>
         </div>
 
-        <!-- Slide 7: Containerized and Deployed a Full-Stack Application -->
+        <!-- Slide 7: Used Nginx to Serve Frontend and Proxy Backend Requests -->
         <div class="slide" id="slide-7">
-            <h2>Containerized and Deployed a Full-Stack Application</h2>
+            <h2>Containerized and Deploy - Used Nginx to Serve Frontend and Proxy Backend Requests</h2>
             <div class="columns">
                 <div class="column">
-                    <p>Developed and containerized application components using Docker.</p>
-                    <ul>
-                        <li>Built Docker images for frontend and backend services.</li>
-                        <li>Pushed images to a container registry.</li>
-                        <li>Deployed services to Kubernetes using manifests.</li>
-                    </ul>
-                </div>
-                <div class="column" style="text-align: center;">
-                    <img src="https://www.docker.com/wp-content/uploads/2022/03/horizontal-logo-monochromatic-white.png"
-                        alt="Docker Logo" style="width: 200px; height: auto;">
-                </div>
-            </div>
-        </div>
-        <!-- Slide 8: Used Nginx to Serve Frontend and Proxy Backend Requests -->
-        <div class="slide" id="slide-8">
-            <h2>Used Nginx to Serve Frontend and Proxy Backend Requests</h2>
-            <div class="columns">
-                <div class="column">
+                    <p>Built Docker images for frontend and backend services.</p>
+
                     <p>Implemented Nginx as a reverse proxy and web server to enhance performance and security.</p>
                     <ul>
                         <li>Served static frontend assets efficiently. <a
@@ -445,15 +430,17 @@
                                 target="_blank">Nginx Config</a></li>
                     </ul>
                 </div>
-                <div class="column" style="text-align: center;">
+                <div class="column" style="text-align: center; background: #ffffff36;  border-radius: 10px;">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Nginx_logo.svg" alt="Nginx Logo"
-                        style="width: 200px; height: auto; margin-top: 100px;">
+                        style="width: 200px; height: auto; margin-top: 75px;"><br>
+                    <img src="https://www.docker.com/wp-content/uploads/2022/03/horizontal-logo-monochromatic-white.png"
+                        alt="Docker Logo" style="width: 200px; height: auto;">
                 </div>
             </div>
         </div>
 
-        <!-- Slide 9: Used Git and GitHub for Version Control -->
-        <div class="slide" id="slide-9">
+        <!-- Slide 8: Used Git and GitHub for Version Control -->
+        <div class="slide" id="slide-8">
             <h2>Used Git and GitHub for Version Control</h2>
             <div class="columns">
                 <div class="column">
@@ -470,8 +457,8 @@
                 </div>
             </div>
         </div>
-        <!-- Slide 10: Future Architecture -->
-        <div class="slide" id="slide-10">
+        <!-- Slide 9: Future Architecture -->
+        <div class="slide" id="slide-9">
             <h2>Future Architecture</h2>
             <p>Enhancing traffic routing and simplifying configurations with an Nginx Ingress Controller.</p>
             <div class="columns">
@@ -500,8 +487,8 @@
                 </div>
             </div>
         </div>
-        <!-- Slide 11: Conclusion -->
-        <div class="slide" id="slide-11"
+        <!-- Slide 10: Conclusion -->
+        <div class="slide" id="slide-10"
             style="background-image: url('background2.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
             <h1 class="centered" style="font-size: 4em; color: #ffffff; text-shadow: 2px 2px 5px #000;">Thank You!</h1>
             <p class="centered" style="font-size: 1.5em; margin-top: 20px;">Any Questions?</p>
@@ -607,6 +594,10 @@
                 modal.style.display = 'none';
             }
         }
+        //close modal when pressing any keybord key
+        document.addEventListener('keydown', function (event) {
+            modal.style.display = 'none';
+        });
     </script>
 </body>
 

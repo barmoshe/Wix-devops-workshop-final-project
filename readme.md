@@ -183,7 +183,7 @@ graph TD
         NLB["AWS Network Load Balancer"]
     end
 
-    subgraph Ingress
+    subgraph Nginx
         IngressController["Nginx Ingress Controller"]
 
     subgraph Frontend

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My DevOps Project Presentation</title>
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        /* Reset and Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0d0d0d;
+            color: #ffffff;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, #1a1a1a, #0d0d0d 70%);
+            transform: translate(-50%, -50%);
+            animation: rotateBackground 30s infinite linear;
+            z-index: -1;
+        }
+
+        @keyframes rotateBackground {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Slide Container */
+        .slides {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
+        /* Individual Slide */
+        .slide {
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            background: rgba(13, 13, 13, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateX(100%) scale(0.8) rotateY(45deg);
+            transition: opacity 1s ease, transform 1s ease;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1) rotateY(0deg);
+        }
+
+        /* Heading Styles */
+        h1 {
+            color: #f39c12;
+            font-size: 3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #f39c12;
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #f39c12;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* Content Styles */
+        p,
+        li {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #ecf0f1;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 20px;
+            list-style: none;
+        }
+
+        ul li::before {
+            content: "➤ ";
+            color: #f39c12;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            font-size: 1em;
+            margin-top: 20px;
+            color: #bdc3c7;
+        }
+
+        /* Centered Content */
+        .centered {
+            text-align: center;
+        }
+
+        /* Image Styling */
+        .slide img {
+            max-width: 100%;
+            height: auto;
+            margin: 20px 0;
+            cursor: pointer;
+            /* Indicate clickability */
+        }
+
+        .diagram {
+            width: 200px;
+            /* Make diagram images small on the slides */
+            height: auto;
+        }
+
+        /* Two Columns */
+        .columns {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .column {
+            flex: 1;
+        }
+
+        /* Technology Icons */
+        .tech-icons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .tech-icon {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .tech-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .tech-icon img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px rgba(243, 156, 18, 0.7));
+            transition: transform 0.3s;
+        }
+
+        .tech-icon p {
+            font-size: 1em;
+        }
+
+        /* Navigation Buttons */
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-button {
+            background: #f39c12;
+            border: none;
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .nav-button:hover {
+            background: #d35400;
+            transform: scale(1.05);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            padding: 0;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: auto;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: auto;
+            max-width: 90%;
+            max-height: 100%;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .slide {
+                width: 90%;
+                height: 90%;
+                top: 5%;
+                left: 5%;
+            }
+
+            h1 {
+                font-size: 2.5em;
+            }
+
+            h2 {
+                font-size: 2em;
+            }
+
+            h3 {
+                font-size: 1.5em;
+            }
+
+            p,
+            li {
+                font-size: 1em;
+            }
+
+            .nav-button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .columns {
+                flex-direction: column;
+            }
+
+            .close {
+                top: 10px;
+                right: 20px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="slides">
+        <!-- Slide 1: Title Slide -->
+        <div class="slide active" id="slide-1"
+            style="background-image: url('background1.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+            <h1 class="centered" style="color: #ffffff; text-shadow: 2px 2px 5px #000;">My DevOps Workshop Project</h1>
+            <h3 class="centered" style="color: #f39c12;">Cloud infrastructure & Kubernetes orchestration</h3><br><br>
+            <p class="centered" style="font-size: 1.5em;">Presented by: Bar M.</p>
+            <div class="contact-info centered">
+                <!-- <p>Email: 1barmoshe1@gmail.com | GitHub: <a href="https://github.com/barmoshe"
+                        target="_blank">barmoshe</a></p> -->
+            </div>
+        </div>
+
+        <!-- Slide 2: Introduction -->
+        <div class="slide" id="slide-2">
+            <h2>Introduction</h2>
+            <div style="display: flex; align-items: center;">
+                <div style="flex: 1;">
+                    <ul>
+                        <li>Created cloud infrastructure using Terraform</li>
+                        <li>Deployed a Kubernetes cluster on AWS EKS</li>
+                        <li>Containerized and deployed a full-stack application</li>
+                        <li>Used Git and GitHub for version control</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <!-- Placeholder for relevant icon or image -->
+                    <img src="https://assets.dryicons.com/uploads/icon/svg/9859/6aaff49e-741b-49c8-8770-feb16320f009.svg"
+                        alt="Introduction Icon"
+                        style="width: 250px; height: auto; filter: brightness(0) saturate(100%) invert(32%) sepia(92%) saturate(700%) hue-rotate(17deg);">
+                </div>
+            </div>
+        </div>
+        <!-- Slide 3: Project Overview -->
+        <div class="slide" id="slide-3">
+            <h2>Project Overview</h2>
+            <p>A high-level view of the application components:</p>
+            <div style="text-align: center;">
+                <!-- Visual flow diagram -->
+                <img src="./imgs/diagram1.png" alt="Project Overview Diagram" class="diagram">
+                <!-- Note: Replace 'diagram1.png' with your diagram -->
+            </div>
+        </div>
+        <!-- Slide 4: Live Demo -->
+        <div class="slide" id="slide-4"
+            style="background-image: url('live-demo-background.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+            <h1 class="centered" style="font-size: 4em; color: #ffffff; text-shadow: 2px 2px 5px #000;">Live Demo Time!
+                🎉</h1>
+            <p class="centered" style="font-size: 1.5em; margin-top: 20px;">Check out the application at:</p>
+            <p class="centered" style="font-size: 1.5em;"><a href="https://barm.wix-devops-workshop.com/"
+                    target="_blank" style="color: #f39c12;">https://barm.wix-devops-workshop.com/</a></p>
+        </div>
+
+
+
+        <!-- Slide 5: Created Cloud Infrastructure using Terraform -->
+        <div class="slide" id="slide-5">
+            <h2>Created Cloud Infrastructure using Terraform</h2>
+            <div class="columns">
+                <div class="column">
+                    <p>Utilized Terraform to automate the creation and management of cloud infrastructure on AWS.</p>
+                    <ul>
+                        <li>Defined Infrastructure as Code (IaC) with Terraform scripts.</li>
+                        <li>Provisioned resources such as VPCs, subnets, security groups.</li>
+                        <li>Enabled consistent and repeatable deployments.</li>
+                    </ul>
+                </div>
+                <div class="column" style="text-align: center;">
+                    <img src="https://www.datocms-assets.com/2885/1620155116-brandhcterraformverticalcolor.svg"
+                        alt="Terraform Logo"
+                        style="width: 200px; height: auto; background: #ffffff36; padding: 10px; border-radius: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Deployed a Kubernetes Cluster on AWS EKS -->
+        <div class="slide" id="slide-6">
+            <h2>Deployed a Kubernetes Cluster on AWS EKS</h2>
+            <div class="columns">
+                <div class="column">
+                    <p>Set up a scalable and highly available Kubernetes cluster using Amazon EKS.</p>
+                    <ul>
+                        <li>Configured node groups and auto-scaling policies.</li>
+                        <li>Integrated with AWS networking and security services.</li>
+                        <li>Used Helm charts.</li>
+                        <li>Managed deployments via <code>kubectl</code>.</li>
+                    </ul>
+                </div>
+                <div class="column" style="text-align: center;">
+                    <img src="https://icons.iconarchive.com/icons/simpleicons-team/simple/512/amazon-eks-icon.png"
+                        alt="AWS EKS Logo"
+                        style="width: 200px; height: auto;background: #ffffff36; padding: 10px; border-radius: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Containerized and Deployed a Full-Stack Application -->
+        <div class="slide" id="slide-7">
+            <h2>Containerized and Deployed a Full-Stack Application</h2>
+            <div class="columns">
+                <div class="column">
+                    <p>Developed and containerized application components using Docker.</p>
+                    <ul>
+                        <li>Built Docker images for frontend and backend services.</li>
+                        <li>Pushed images to a container registry.</li>
+                        <li>Deployed services to Kubernetes using manifests.</li>
+                    </ul>
+                </div>
+                <div class="column" style="text-align: center;">
+                    <img src="https://www.docker.com/wp-content/uploads/2022/03/horizontal-logo-monochromatic-white.png"
+                        alt="Docker Logo" style="width: 200px; height: auto;">
+                </div>
+            </div>
+        </div>
+        <!-- Slide 8: Used Nginx to Serve Frontend and Proxy Backend Requests -->
+        <div class="slide" id="slide-8">
+            <h2>Used Nginx to Serve Frontend and Proxy Backend Requests</h2>
+            <div class="columns">
+                <div class="column">
+                    <p>Implemented Nginx as a reverse proxy and web server to enhance performance and security.</p>
+                    <ul>
+                        <li>Served static frontend assets efficiently. <a
+                                href="https://github.com/Gal-Or/IsraelifyApp/blob/deploy-to-kubernetes/Dockerfile"
+                                target="_blank">Dockerfile</a></li>
+                        <li>Configured proxy_pass to route API requests to the backend server. <a
+                                href="https://github.com/Gal-Or/IsraelifyApp/blob/deploy-to-kubernetes/nginx.conf"
+                                target="_blank">Nginx Config</a></li>
+                    </ul>
+                </div>
+                <div class="column" style="text-align: center;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Nginx_logo.svg" alt="Nginx Logo"
+                        style="width: 200px; height: auto; margin-top: 100px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Used Git and GitHub for Version Control -->
+        <div class="slide" id="slide-9">
+            <h2>Used Git and GitHub for Version Control</h2>
+            <div class="columns">
+                <div class="column">
+                    <p>Managed source code and collaboration using Git and GitHub.</p>
+                    <ul>
+                        <li>Maintained repositories with clear commit history.</li>
+                        <li>Collaborated through pull requests and code reviews.</li>
+                        <li>Implemented branching strategies.</li>
+                    </ul>
+                </div>
+                <div class="column" style="text-align: center;">
+                    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                        alt="GitHub Logo" style="width: 200px; height: auto;">
+                </div>
+            </div>
+        </div>
+        <!-- Slide 10: Future Architecture -->
+        <div class="slide" id="slide-10">
+            <h2>Future Architecture</h2>
+            <p>Enhancing traffic routing and simplifying configurations with an Nginx Ingress Controller.</p>
+            <div class="columns">
+                <div class="column">
+                    <ul>
+                        <li>Add an Nginx Ingress Controller within the Kubernetes cluster.</li>
+                        <li>Improve traffic routing by managing it directly in the cluster.</li>
+                        <li>
+                            Route:
+                            <ul>
+                                <li>Requests to <code>/</code> → Frontend Service</li>
+                                <li>Requests to <code>/api</code> → Backend Service</li>
+                            </ul>
+                        </li>
+                        <li>Eliminate custom Nginx configurations in the frontend image.</li>
+                        <li>
+                            Utilize AWS Network Load Balancer (NLB) to direct external traffic to the Ingress
+                            Controller, which handles internal routing.
+                        </li>
+                    </ul>
+                </div>
+                <div class="column" style="text-align: center;">
+                    <!-- Placeholder for Future Architecture Diagram -->
+                    <img src="./imgs/image.png" alt="Future Architecture Diagram" class="diagram">
+                    <!-- Note: Replace the placeholder image with your actual diagram -->
+                </div>
+            </div>
+        </div>
+        <!-- Slide 11: Conclusion -->
+        <div class="slide" id="slide-11"
+            style="background-image: url('background2.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+            <h1 class="centered" style="font-size: 4em; color: #ffffff; text-shadow: 2px 2px 5px #000;">Thank You!</h1>
+            <p class="centered" style="font-size: 1.5em; margin-top: 20px;">Any Questions?</p>
+            <div class="contact-info centered" style="margin-top: 30px;">
+                <p>Email: <a href="mailto:1barmoshe1@gmail.com" style="color: #f39c12;">1barmoshe1@gmail.com</a></p>
+                <p>GitHub: <a href="https://github.com/barmoshe" target="_blank"
+                        style="color: #f39c12;">github.com/barmoshe</a></p>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modal-img">
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn">⟵ Previous</button>
+        <button class="nav-button" id="nextBtn">Next ⟶</button>
+    </div>
+
+    <script>
+        // Initialize variables
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // Navigation Buttons
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+
+        // Event Listeners
+        nextBtn.addEventListener('click', () => {
+            moveToSlide(currentSlideIndex + 1);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            moveToSlide(currentSlideIndex - 1);
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                moveToSlide(currentSlideIndex + 1);
+            } else if (e.key === 'ArrowLeft') {
+                moveToSlide(currentSlideIndex - 1);
+            }
+        });
+
+        // Function to handle slide transition
+        function moveToSlide(newIndex) {
+            if (newIndex < 0 || newIndex >= totalSlides) return;
+
+            slides[currentSlideIndex].classList.remove('active');
+
+            currentSlideIndex = newIndex;
+
+            slides[currentSlideIndex].classList.add('active');
+        }
+
+        // Touch Navigation for Mobile Devices
+        let touchStartX = null;
+
+        document.addEventListener('touchstart', function (event) {
+            touchStartX = event.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', function (event) {
+            if (!touchStartX) return;
+            let touchEndX = event.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) {
+                moveToSlide(currentSlideIndex + 1);
+            } else if (touchEndX > touchStartX + 50) {
+                moveToSlide(currentSlideIndex - 1);
+            }
+            touchStartX = null;
+        }, false);
+
+        // Modal functionality
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modal-img');
+        const closeBtn = document.getElementsByClassName('close')[0];
+
+        const diagramImages = document.querySelectorAll('.slide img.diagram');
+
+        diagramImages.forEach(function (img) {
+            img.addEventListener('click', function () {
+                modal.style.display = 'block';
+                modalImg.src = this.src;
+            });
+        });
+
+        closeBtn.onclick = function () {
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside of the image
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>

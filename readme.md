@@ -9,6 +9,8 @@ This project sets up an AWS EKS cluster to run a full-stack Spotify clone applic
 - **AWS Load Balancer Controller** installed within the cluster.
 - **Nginx configuration** to proxy frontend requests to the backend service.
 
+[Presentation](https://barmoshe.github.io/Wix-devops-workshop-final-project/) 
+
 ## Table of Contents
 
 - [Architecture](#architecture)
